@@ -1,0 +1,6 @@
+bucket_name = "vehicle-safety-lake-<something-unique>"
+alert_email = "you@example.com"
+
+# Leave these empty on the first apply. Fill them in from DESC INTEGRATION afterwards.
+snowflake_iam_user_arn = ""
+snowflake_external_id  = ""

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Local data and secrets
+data/
+*.zip
+.env
+*.pem
+.streamlit/secrets.toml
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+*.tfplan
+
+# Internal project brief, kept local
+PROJECT.md
