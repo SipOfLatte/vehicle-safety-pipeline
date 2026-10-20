@@ -62,7 +62,7 @@ question = st.chat_input("Ask about a vehicle's complaints or recalls")
 if question:
     with st.chat_message("user"):
         st.markdown(question)
-    blocked = check_limits()
+    blocked = check_limits("chat")
     with st.chat_message("assistant"):
         if blocked:
             st.info(blocked)

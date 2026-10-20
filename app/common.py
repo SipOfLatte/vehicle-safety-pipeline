@@ -11,9 +11,10 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # repo root, for `import ai`
 
 MAX_QUESTIONS_PER_SESSION = 10
-DAILY_BUDGET_USD = 0.50
-# Claude Haiku 5.5, USD per million tokens (input, output).
-PRICES = {"claude-haiku-5-5": (0.10, 0.50)}
+# Claude spend per day, USD 0.50 in total, split so one page can't use up the other's share.
+# LLM_USAGE.purpose: the chatbot logs 'filters' and 'answer', the Ask page logs 'sql'.
+DAILY_BUDGETS_USD = {"chat": 0.20, "ask": 0.30}
+PURPOSES = {"chat": ("filters", "answer"), "ask": ("sql",)}
 
 
 def load_secrets() -> None:
@@ -48,15 +49,21 @@ def data_as_of() -> str:
     return str(cur.fetchone()[0])
 
 
-def spent_today_usd() -> float:
+def spent_today_usd(page: str) -> float:
     cur = snowflake().cursor()
-    cur.execute("select coalesce(sum(cost_usd), 0) from VEHICLE_SAFETY.AI.LLM_USAGE where called_at >= current_date()")
+    purposes = PURPOSES[page]
+    cur.execute(
+        "select coalesce(sum(cost_usd), 0) from VEHICLE_SAFETY.AI.LLM_USAGE "
+        f"where called_at >= current_date() and purpose in ({', '.join(['%s'] * len(purposes))})",
+        purposes,
+    )
     return float(cur.fetchone()[0])
 
 
 def record_usage(purpose: str, model: str, usage) -> None:
-    price_in, price_out = PRICES[model]
-    cost = (usage.input_tokens * price_in + usage.output_tokens * price_out) / 1_000_000
+    from ai.pricing import cost_usd
+
+    cost = cost_usd(model, usage)
     snowflake().cursor().execute(
         "insert into VEHICLE_SAFETY.AI.LLM_USAGE (purpose, model, input_tokens, output_tokens, cost_usd) "
         "values (%s, %s, %s, %s, %s)",
@@ -64,10 +71,25 @@ def record_usage(purpose: str, model: str, usage) -> None:
     )
 
 
-def check_limits() -> str | None:
+def check_limits(page: str) -> str | None:
     """A message explaining why the user can't ask now, or None if they can."""
     if st.session_state.get("questions_asked", 0) >= MAX_QUESTIONS_PER_SESSION:
         return f"This demo allows {MAX_QUESTIONS_PER_SESSION} questions per session. Reload the page to start a new one."
-    if spent_today_usd() >= DAILY_BUDGET_USD:
-        return "The demo's daily AI budget is used up. It resets at midnight (US Pacific time)."
+    if spent_today_usd(page) >= DAILY_BUDGETS_USD[page]:
+        return "This page's daily AI budget is used up. It resets at midnight (US Pacific time)."
     return None
+
+
+@st.cache_resource
+def ask_snowflake():
+    """Separate connection for model-written SQL: read-only ASK_ROLE, GOLD schema, 30-second timeout."""
+    from ai.text_to_sql.executor import ask_connection
+
+    return ask_connection()
+
+
+@st.cache_data(ttl=24 * 3600, show_spinner=False)
+def sql_schema() -> str:
+    from ai.text_to_sql.schema import schema_context
+
+    return schema_context(ask_snowflake())

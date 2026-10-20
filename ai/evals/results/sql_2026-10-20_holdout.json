@@ -1,0 +1,291 @@
+{
+  "summary": {
+    "holdout": {
+      "questions": 15,
+      "passed": 15,
+      "execution_accuracy": 1.0,
+      "reviewed": 0,
+      "cost_usd": 0.2324,
+      "avg_model_calls": 2.47,
+      "stops": {
+        "end_turn": 15
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "s26",
+      "set": "holdout",
+      "question": "How many people were reported injured in complaints about the 2019 Subaru Outback?",
+      "reviewed": false,
+      "answer": "Owners reported 18 people injured in complaints about the 2019 Subaru Outback. That comes from 1,036 complaints for that model year. These are unverified owner reports. The figure doesn't include the separate \"OUTBACK SPORT\" model family.",
+      "stop": "end_turn",
+      "sql": "select make, model_family, model_year, injured, complaints, injured_note from (select make, model_family, model_year, injured, complaints, 'people injured as reported by owners' as injured_note from vehicle_complaint_summary where make='SUBARU' and model_family='OUTBACK' and model_year=2019)",
+      "steps": [
+        "find_values: 2 matches for 'outback'",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01599,
+      "seconds": 5.7,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s27",
+      "set": "holdout",
+      "question": "Which 2018 model-year vehicles with at least 30 complaints have the lowest severe share? Show 3.",
+      "reviewed": false,
+      "answer": "Among 2018 model-year vehicles with at least 30 complaints, these three have the lowest severe share (the share of complaints reporting a crash, fire, injury or death):\n\n1. **BMW K1600B:** 0% (0 of 44 complaints).\n2. **Nissan Kicks:** about 1.2% (1 of 86).\n3. **Ram 2500:** about 1.7% (44 of 2,605).\n\nComplaint totals are counts, not rates, and they rise with sales volume. The complaints are also unverified owner reports.",
+      "stop": "end_turn",
+      "sql": "select make, model_family, model_year, complaints, severe_complaints, severe_share from vehicle_complaint_summary where model_year=2018 and complaints>=30 order by severe_share asc, complaints desc limit 3",
+      "steps": [
+        "run_sql: 3 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.0145,
+      "seconds": 4.1,
+      "expected_rows": 3,
+      "passed": true,
+      "actual_rows": 3
+    },
+    {
+      "id": "s28",
+      "set": "holdout",
+      "question": "How many recall campaigns cover the 2020 Ford Explorer?",
+      "reviewed": false,
+      "answer": "The 2020 Ford Explorer is covered by 34 NHTSA recall campaigns. None of them carry a \"do not drive\" advisory. The most recent recall report was received on 2026-07-14.\n\nThe count covers any component, not one specific problem. Separately, the model year has 1,237 owner complaints, which are unverified reports.",
+      "stop": "end_turn",
+      "sql": "select make, model_family, model_year, recall_campaigns, do_not_drive_recalls, latest_recall_date, complaints from vehicle_complaint_summary where make='FORD' and model_family='EXPLORER' and model_year=2020",
+      "steps": [
+        "find_values: 5 matches for 'explorer'",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01626,
+      "seconds": 6.0,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s29",
+      "set": "holdout",
+      "question": "Which model year of the Chevrolet Silverado 1500 has the most complaints?",
+      "reviewed": false,
+      "answer": "The 2014 model year of the Chevrolet Silverado 1500 has the most complaints, with 1,436. The most common complaint area is steering. Of those complaints, 89 (6.2%) report a crash, fire, injury or death.\n\nThese are raw counts, not rates. NHTSA publishes no sales figures, so a model year that sold more will tend to have more complaints. The complaints are also unverified owner reports.",
+      "stop": "end_turn",
+      "sql": "select model_year, complaints, severe_complaints, severe_share, top_component_group from vehicle_complaint_summary where make='CHEVROLET' and model_family='SILVERADO 1500' order by complaints desc limit 1",
+      "steps": [
+        "find_values: 16 matches for 'silverado'",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01749,
+      "seconds": 5.8,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s30",
+      "set": "holdout",
+      "question": "How many fire complaints were received about electrical systems in 2023?",
+      "reviewed": false,
+      "answer": "NHTSA received 405 fire complaints about electrical systems in 2023. That is out of 10,919 electrical-system complaints received that year. These are unverified owner reports, and I counted them by the month NHTSA received them, not by model year.",
+      "stop": "end_turn",
+      "sql": "select sum(fire_complaints) as fire_complaints, sum(complaints) as electrical_complaints from fct_complaints_monthly where component_group='ELECTRICAL SYSTEM' and month>='2023-01-01' and month<'2024-01-01'",
+      "steps": [
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01344,
+      "seconds": 3.9,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s31",
+      "set": "holdout",
+      "question": "Which five makes had the most seat belt complaints in 2024?",
+      "reviewed": false,
+      "answer": "In 2024, the five makes with the most seat belt complaints were Ford (141), Tesla (139), Hyundai (97), Honda (69) and Chevrolet (65). These are raw counts of unverified owner reports, not rates. Makes that sell more vehicles tend to get more complaints, so the ranking doesn't show which make has the worse seat belts.",
+      "stop": "end_turn",
+      "sql": "select make, sum(complaints) as seat_belt_complaints from fct_complaints_monthly where component_group='SEAT BELTS' and month>='2024-01-01' and month<'2025-01-01' group by make order by 2 desc limit 5",
+      "steps": [
+        "run_sql: 5 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01387,
+      "seconds": 3.5,
+      "expected_rows": 5,
+      "passed": true,
+      "actual_rows": 5
+    },
+    {
+      "id": "s32",
+      "set": "holdout",
+      "question": "Does the 2021 Ford Bronco Sport have a recall for its fuel system?",
+      "reviewed": false,
+      "answer": "Yes. The 2021 Ford Bronco Sport has four recall campaigns in the Fuel and Propulsion component group: 21V625000, 22V859000, 25V165000 and 25V467000.\n\nOwners filed 122 complaints in that group, and 9 of them report a crash, fire, injury or death. The data matches recalls to complaints by component group only. These recalls may not cover the exact problem owners describe. Complaints are unverified owner reports.",
+      "stop": "end_turn",
+      "sql": "select component_group, complaints, severe_complaints, recall_campaigns, has_recall, campaign_numbers from recall_coverage where make='FORD' and model_family='BRONCO SPORT' and model_year=2021 and component_group='FUEL AND PROPULSION'",
+      "steps": [
+        "find_values: 3 matches for 'bronco'",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01672,
+      "seconds": 5.8,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s33",
+      "set": "holdout",
+      "question": "Which Honda vehicles have the most complaints in a component group that has no recall? Top 5.",
+      "reviewed": false,
+      "answer": "The five Honda vehicles with the most complaints in a component group that has no matching recall are:\n\n| Vehicle | Component group | Complaints |\n|---|---|---|\n| 2018 Accord | Engine | 608 |\n| 2008 Accord | Service brakes | 573 |\n| 2018 CR-V | Engine | 544 |\n| 2017 CR-V | Engine | 539 |\n| 2013 Accord | Steering | 499 |\n\nThese are raw counts, not rates. Popular models collect more complaints because more of them are on the road. The complaints are also unverified owner reports. Recall matching is by component group only, so \"no recall\" means no recall in that group for that model year.",
+      "stop": "end_turn",
+      "sql": "select model_family, model_year, component_group, complaints, severe_complaints, latest_complaint_date from recall_coverage where make='HONDA' and has_recall=false order by complaints desc limit 5",
+      "steps": [
+        "run_sql: 5 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01509,
+      "seconds": 4.2,
+      "expected_rows": 5,
+      "passed": true,
+      "actual_rows": 5
+    },
+    {
+      "id": "s34",
+      "set": "holdout",
+      "question": "How many component groups have been flagged as rising for the Tesla Model 3 in the last 36 months?",
+      "reviewed": false,
+      "answer": "Seven component groups were flagged as rising for the Tesla Model 3 in the last 36 months. Together they account for 16 flagged months. A month is flagged when it has at least 10 complaints and at least twice the average of the three months before it. These are unverified owner reports, so the flags show a rise in complaints filed, not confirmed defects.",
+      "stop": "end_turn",
+      "sql": "select count(distinct component_group) as rising_component_groups, count(*) as rising_months from component_trends where make='TESLA' and model_family='MODEL 3' and is_rising",
+      "steps": [
+        "find_values: 1 matches for 'model 3'",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01555,
+      "seconds": 5.5,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s35",
+      "set": "holdout",
+      "question": "What was the highest monthly number of air bag complaints for any single vehicle model in the last 36 months, and which model was it?",
+      "reviewed": false,
+      "answer": "The highest monthly count was 65 air bag complaints for the Chevrolet Traverse, in January 2024. That was up from an average of 41 a month over the three months before. The Traverse also had the next four highest months, so it leads this list by a wide margin. These are raw counts of unverified owner reports. They partly reflect how many Traverses are on the road.",
+      "stop": "end_turn",
+      "sql": "select make, model_family, month, complaints as air_bag_complaints, prior_3_month_avg from component_trends where component_group='AIR BAGS' order by complaints desc limit 1",
+      "steps": [
+        "run_sql: 5 rows",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01668,
+      "seconds": 5.6,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s36",
+      "set": "holdout",
+      "question": "How many complaints mention a crash for the 2015 Jeep Cherokee?",
+      "reviewed": false,
+      "answer": "The 2015 Jeep Cherokee has 45 complaints that report a crash, out of 1,789 total complaints for that model year. These are unverified owner reports. I matched the model name \"CHEROKEE\" exactly, so Grand Cherokee is not included.",
+      "stop": "end_turn",
+      "sql": "SELECT make, model_family, model_year, crash_complaints AS crash_complaints, complaints AS total_complaints FROM vehicle_complaint_summary WHERE make='JEEP' AND model_family='CHEROKEE' AND model_year=2015",
+      "steps": [
+        "find_values: 4 matches for 'cherokee'",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01601,
+      "seconds": 4.9,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s37",
+      "set": "holdout",
+      "question": "List the 2023 model-year vehicles with any do-not-drive recall.",
+      "reviewed": false,
+      "answer": "I found 17 vehicles from model year 2023 with at least one do-not-drive recall:\n\n- **Two do-not-drive recalls:** Kia Forte and Subaru Solterra.\n- **One do-not-drive recall, Ford:** Maverick, Bronco, Bronco Sport, F-350 SD, Ranger, F-450 SD, F-550 SD and F-600 SD.\n- **One do-not-drive recall, other makes:** Toyota Camry, Toyota bZ4X, BMW iX, Mercedes-Benz AMG G63, Porsche 911, IC Bus CESB and Nova Bus LFS.\n\nThe table shows each vehicle's total recall campaigns and complaint count. The complaint figures are counts of unverified owner reports, so they track how many vehicles are on the road and aren't a measure of risk.",
+      "stop": "end_turn",
+      "sql": "select make, model_family, model_year, do_not_drive_recalls, recall_campaigns, complaints, latest_recall_date from vehicle_complaint_summary where model_year=2023 and do_not_drive_recalls>0 order by do_not_drive_recalls desc, complaints desc",
+      "steps": [
+        "run_sql: 17 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01717,
+      "seconds": 5.0,
+      "expected_rows": 17,
+      "passed": true,
+      "actual_rows": 17
+    },
+    {
+      "id": "s38",
+      "set": "holdout",
+      "question": "Which makes have the most complaints about vehicle speed control since 2020? Top 5.",
+      "reviewed": false,
+      "answer": "Since the start of 2020, these five makes have the most vehicle speed control complaints:\n\n| Make | Complaints |\n|---|---|\n| Ford | 2,225 |\n| Tesla | 1,475 |\n| Chevrolet | 1,325 |\n| Hyundai | 1,152 |\n| Jeep | 1,096 |\n\nThese are raw counts, not rates. NHTSA publishes no sales figures, so makes that sell more vehicles will tend to have more complaints. The complaints are also unverified owner reports.\n\nTesla stands out on severity. It has 313 crash complaints, against 178 for Ford, which has more complaints overall. The results table shows the crash, injury and fatal counts for all five makes.",
+      "stop": "end_turn",
+      "sql": "select make, sum(complaints) as complaints, sum(crash_complaints) as crash_complaints, sum(injury_complaints) as injury_complaints, sum(fatal_complaints) as fatal_complaints from fct_complaints_monthly where component_group='VEHICLE SPEED CONTROL' and month>='2020-01-01' group by make order by complaints desc limit 5",
+      "steps": [
+        "run_sql: 5 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01582,
+      "seconds": 4.9,
+      "expected_rows": 5,
+      "passed": true,
+      "actual_rows": 5
+    },
+    {
+      "id": "s39",
+      "set": "holdout",
+      "question": "Which vehicle has the most complaints per owner in Australia?",
+      "reviewed": false,
+      "answer": "I can't answer this with these tables. They only hold US NHTSA complaints and recalls, so they have no Australian data. They also have no ownership or sales figures, so complaints can't be turned into a per-owner rate.\n\nI can answer a related question about US vehicles. For example, I could rank US vehicles by the share of their complaints that report a crash, fire, injury or death. That share doesn't depend on sales volume.",
+      "stop": "end_turn",
+      "sql": null,
+      "steps": [],
+      "model_calls": 1,
+      "cost_usd": 0.01136,
+      "seconds": 2.2,
+      "passed": true
+    },
+    {
+      "id": "s40",
+      "set": "holdout",
+      "question": "What share of the 2020 Chevrolet Bolt's complaints are severe?",
+      "reviewed": false,
+      "answer": "About 6.3% of the 2020 Chevrolet Bolt EV's complaints are severe, meaning they report a crash, fire, injury or death. That is 11 severe complaints out of 174. The data stores this model as BOLT EV, and the EUV is a separate model family with no 2020 row. These are unverified owner reports.",
+      "stop": "end_turn",
+      "sql": "select make, model_family, model_year, complaints, severe_complaints, severe_share from vehicle_complaint_summary where make='CHEVROLET' and model_family like 'BOLT%' and model_year=2020",
+      "steps": [
+        "find_values: 2 matches for 'bolt'",
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 3,
+      "cost_usd": 0.01645,
+      "seconds": 6.1,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    }
+  ]
+}

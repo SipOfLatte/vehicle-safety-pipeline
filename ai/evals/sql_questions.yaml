@@ -1,0 +1,326 @@
+# Text-to-SQL eval: 40 questions, each with a reference query written by hand.
+#
+# Scoring is execution accuracy: the assistant's final query and the reference query run at the same
+# time, and the question passes when the results match. Column names and column order don't matter,
+# extra columns are allowed, rows must match (as a set unless ordered: true), and numbers match within
+# 1% (a share given as a percentage also matches). The data changes daily, so the reference results
+# aren't stored; the queries are.
+#
+# alternatives: other reference queries whose result is an equally correct answer (e.g. an array in one
+# row instead of one row per element). The question passes if the result matches any of them.
+#
+# Questions with answer_pattern have no query answer (the tables can't answer them). They pass when the
+# assistant's answer text matches the pattern (case-insensitive regex) instead of inventing a number.
+#
+# set: dev questions are used while tuning the prompt; holdout questions run once after tuning.
+# Drafted by Claude on 20 Oct 2026. Every question needs a human check (reviewed: true) before the
+# score is reported.
+
+questions:
+  # --- vehicle_complaint_summary ---
+  - id: s01
+    set: dev
+    question: "How many complaints are there about the 2021 Tesla Model Y?"
+    sql: |
+      select complaints from vehicle_complaint_summary
+      where make = 'TESLA' and model_family = 'MODEL Y' and model_year = 2021
+    reviewed: false
+  - id: s02
+    set: dev
+    question: "Which 10 makes have the most complaints in total?"
+    sql: |
+      select make, sum(complaints) as complaints from vehicle_complaint_summary
+      group by make order by complaints desc limit 10
+    reviewed: false
+  - id: s03
+    set: dev
+    question: "Among 2022 model-year vehicles with at least 30 complaints, which 10 have the highest share of severe complaints?"
+    sql: |
+      select make, model_family, severe_share from vehicle_complaint_summary
+      where model_year = 2022 and complaints >= 30
+      order by severe_share desc limit 10
+    reviewed: false
+  - id: s04
+    set: dev
+    question: "How many recall campaigns cover the 2018 Honda Accord?"
+    sql: |
+      select recall_campaigns from vehicle_complaint_summary
+      where make = 'HONDA' and model_family = 'ACCORD' and model_year = 2018
+    reviewed: false
+  - id: s05
+    set: dev
+    question: "Which model years of which vehicles have had the most do-not-drive recalls?"
+    sql: |
+      select make, model_family, model_year, do_not_drive_recalls from vehicle_complaint_summary
+      where do_not_drive_recalls = (select max(do_not_drive_recalls) from vehicle_complaint_summary)
+    reviewed: false
+  - id: s06
+    set: dev
+    question: "What do owners complain about most on the 2018 Chevrolet Equinox?"
+    sql: |
+      select top_component_group from vehicle_complaint_summary
+      where make = 'CHEVROLET' and model_family = 'EQUINOX' and model_year = 2018
+    reviewed: false
+  - id: s07
+    set: dev
+    question: "How many deaths have owners reported in complaints about the Ford F-150, across all model years?"
+    sql: |
+      select sum(deaths) as deaths from vehicle_complaint_summary
+      where make = 'FORD' and model_family = 'F-150'
+    reviewed: false
+  - id: s08
+    set: dev
+    question: "Which five Toyota models have the most complaints?"
+    sql: |
+      select model_family, sum(complaints) as complaints from vehicle_complaint_summary
+      where make = 'TOYOTA' group by model_family order by complaints desc limit 5
+    reviewed: false
+  - id: s09
+    set: dev
+    question: "When was the most recent recall for the 2019 Jeep Grand Cherokee?"
+    sql: |
+      select latest_recall_date from vehicle_complaint_summary
+      where make = 'JEEP' and model_family = 'GRAND CHEROKEE' and model_year = 2019
+    reviewed: false
+  - id: s10
+    set: dev
+    question: "Which 2020 model-year vehicle has the most complaints?"
+    sql: |
+      select make, model_family, complaints from vehicle_complaint_summary
+      where model_year = 2020 order by complaints desc limit 1
+    reviewed: false
+
+  # --- fct_complaints_monthly ---
+  - id: s11
+    set: dev
+    question: "How many air bag complaints about Hyundai vehicles were received each month in 2024?"
+    sql: |
+      select month, sum(complaints) as complaints from fct_complaints_monthly
+      where make = 'HYUNDAI' and component_group = 'AIR BAGS' and month between '2024-01-01' and '2024-12-01'
+      group by month order by month
+    reviewed: false
+  - id: s12
+    set: dev
+    question: "How many engine complaints received in 2022 reported a fire?"
+    sql: |
+      select sum(fire_complaints) as fire_complaints from fct_complaints_monthly
+      where component_group = 'ENGINE' and month between '2022-01-01' and '2022-12-01'
+    reviewed: false
+  - id: s13
+    set: dev
+    question: "Which component group got the most complaints in 2024?"
+    sql: |
+      select component_group, sum(complaints) as complaints from fct_complaints_monthly
+      where month between '2024-01-01' and '2024-12-01'
+      group by component_group order by complaints desc limit 1
+    reviewed: false
+  - id: s14
+    set: dev
+    question: "Which make had the most service brake complaints reporting a crash in 2023?"
+    sql: |
+      select make, sum(crash_complaints) as crash_complaints from fct_complaints_monthly
+      where component_group = 'SERVICE BRAKES' and month between '2023-01-01' and '2023-12-01'
+      group by make order by crash_complaints desc limit 1
+    reviewed: false
+  - id: s15
+    set: dev
+    question: "How many steering complaints about the Honda Civic were received each year from 2020 to 2025?"
+    sql: |
+      select year(month) as year, sum(complaints) as complaints from fct_complaints_monthly
+      where make = 'HONDA' and model_family = 'CIVIC' and component_group = 'STEERING'
+        and month between '2020-01-01' and '2025-12-01'
+      group by year order by year
+    reviewed: false
+
+  # --- recall_coverage ---
+  - id: s16
+    set: dev
+    question: "Which 2020 model-year vehicles have the biggest complaint clusters with no recall for that component? Top 10."
+    sql: |
+      select make, model_family, component_group, complaints from recall_coverage
+      where model_year = 2020 and not has_recall
+      order by complaints desc limit 10
+    reviewed: false
+  - id: s17
+    set: dev
+    question: "Is there a recall for the engine on the 2019 Kia Sorento?"
+    sql: |
+      select has_recall, recall_campaigns from recall_coverage
+      where make = 'KIA' and model_family = 'SORENTO' and model_year = 2019 and component_group = 'ENGINE'
+    reviewed: false
+  - id: s18
+    set: dev
+    question: "List the recall campaign numbers for engine problems on the 2017 Hyundai Santa Fe."
+    sql: |
+      select f.value::string as campaign_number
+      from recall_coverage, lateral flatten(campaign_numbers) f
+      where make = 'HYUNDAI' and model_family = 'SANTA FE' and model_year = 2017 and component_group = 'ENGINE'
+    alternatives:  # the array itself, in one row
+      - |
+        select campaign_numbers from recall_coverage
+        where make = 'HYUNDAI' and model_family = 'SANTA FE' and model_year = 2017 and component_group = 'ENGINE'
+    reviewed: false
+  - id: s19
+    set: dev
+    question: "For vehicle and component combinations with at least 100 complaints, what share have a recall?"
+    sql: |
+      select avg(iff(has_recall, 1, 0)) as share_with_recall from recall_coverage where complaints >= 100
+    reviewed: false
+  - id: s20
+    set: dev
+    question: "Which component groups of the 2016 Kia Sorento have complaints but no recall?"
+    sql: |
+      select component_group, complaints from recall_coverage
+      where make = 'KIA' and model_family = 'SORENTO' and model_year = 2016 and not has_recall
+      order by complaints desc
+    reviewed: false
+
+  # --- component_trends ---
+  - id: s21
+    set: dev
+    question: "Which vehicle components were flagged as rising in the most recent month?"
+    sql: |
+      select make, model_family, component_group, complaints from component_trends
+      where is_rising and month = (select max(month) from component_trends)
+    reviewed: false
+  - id: s22
+    set: dev
+    question: "How many driver assistance complaints did the Tesla Model Y get each month from October 2025 to September 2026?"
+    sql: |
+      select month, sum(complaints) as complaints from fct_complaints_monthly
+      where make = 'TESLA' and model_family = 'MODEL Y' and component_group = 'DRIVER ASSISTANCE'
+        and month between '2025-10-01' and '2026-09-01'
+      group by month order by month
+    reviewed: false
+  - id: s23
+    set: dev
+    question: "For Ford, which component group has been flagged as rising most often in the last 36 months?"
+    sql: |
+      select component_group, count(*) as rising_months from component_trends
+      where make = 'FORD' and is_rising
+      group by component_group order by rising_months desc limit 1
+    reviewed: false
+
+  # --- questions the tables can't answer ---
+  - id: s24
+    set: dev
+    question: "Which car has the highest complaint rate per vehicle sold?"
+    answer_pattern: "sales|sold"
+    reviewed: false
+  - id: s25
+    set: dev
+    question: "What is the average price of a 2022 Toyota Camry?"
+    answer_pattern: "price|not (in|available)|doesn't|does not|can't|cannot"
+    reviewed: false
+
+  # --- held out: written before tuning, run once after it ---
+  - id: s26
+    set: holdout
+    question: "How many people were reported injured in complaints about the 2019 Subaru Outback?"
+    sql: |
+      select injured from vehicle_complaint_summary
+      where make = 'SUBARU' and model_family = 'OUTBACK' and model_year = 2019
+    reviewed: false
+  - id: s27
+    set: holdout
+    question: "Which 2018 model-year vehicles with at least 30 complaints have the lowest severe share? Show 3."
+    sql: |
+      select make, model_family, severe_share from vehicle_complaint_summary
+      where model_year = 2018 and complaints >= 30
+      order by severe_share asc limit 3
+    reviewed: false
+  - id: s28
+    set: holdout
+    question: "How many recall campaigns cover the 2020 Ford Explorer?"
+    sql: |
+      select recall_campaigns from vehicle_complaint_summary
+      where make = 'FORD' and model_family = 'EXPLORER' and model_year = 2020
+    reviewed: false
+  - id: s29
+    set: holdout
+    question: "Which model year of the Chevrolet Silverado 1500 has the most complaints?"
+    sql: |
+      select model_year, complaints from vehicle_complaint_summary
+      where make = 'CHEVROLET' and model_family = 'SILVERADO 1500'
+      order by complaints desc limit 1
+    reviewed: false
+  - id: s30
+    set: holdout
+    question: "How many fire complaints were received about electrical systems in 2023?"
+    sql: |
+      select sum(fire_complaints) as fire_complaints from fct_complaints_monthly
+      where component_group = 'ELECTRICAL SYSTEM' and month between '2023-01-01' and '2023-12-01'
+    reviewed: false
+  - id: s31
+    set: holdout
+    question: "Which five makes had the most seat belt complaints in 2024?"
+    sql: |
+      select make, sum(complaints) as complaints from fct_complaints_monthly
+      where component_group = 'SEAT BELTS' and month between '2024-01-01' and '2024-12-01'
+      group by make order by complaints desc limit 5
+    reviewed: false
+  - id: s32
+    set: holdout
+    question: "Does the 2021 Ford Bronco Sport have a recall for its fuel system?"
+    sql: |
+      select has_recall, recall_campaigns from recall_coverage
+      where make = 'FORD' and model_family = 'BRONCO SPORT' and model_year = 2021
+        and component_group = 'FUEL AND PROPULSION'
+    reviewed: false
+  - id: s33
+    set: holdout
+    question: "Which Honda vehicles have the most complaints in a component group that has no recall? Top 5."
+    sql: |
+      select model_family, model_year, component_group, complaints from recall_coverage
+      where make = 'HONDA' and not has_recall
+      order by complaints desc limit 5
+    reviewed: false
+  - id: s34
+    set: holdout
+    question: "How many component groups have been flagged as rising for the Tesla Model 3 in the last 36 months?"
+    sql: |
+      select count(distinct component_group) as component_groups from component_trends
+      where make = 'TESLA' and model_family = 'MODEL 3' and is_rising
+    reviewed: false
+  - id: s35
+    set: holdout
+    question: "What was the highest monthly number of air bag complaints for any single vehicle model in the last 36 months, and which model was it?"
+    sql: |
+      select make, model_family, month, complaints from component_trends
+      where component_group = 'AIR BAGS'
+      order by complaints desc limit 1
+    reviewed: false
+  - id: s36
+    set: holdout
+    question: "How many complaints mention a crash for the 2015 Jeep Cherokee?"
+    sql: |
+      select crash_complaints from vehicle_complaint_summary
+      where make = 'JEEP' and model_family = 'CHEROKEE' and model_year = 2015
+    reviewed: false
+  - id: s37
+    set: holdout
+    question: "List the 2023 model-year vehicles with any do-not-drive recall."
+    sql: |
+      select make, model_family, do_not_drive_recalls from vehicle_complaint_summary
+      where model_year = 2023 and do_not_drive_recalls > 0
+    reviewed: false
+  - id: s38
+    set: holdout
+    question: "Which makes have the most complaints about vehicle speed control since 2020? Top 5."
+    sql: |
+      select make, sum(complaints) as complaints from fct_complaints_monthly
+      where component_group = 'VEHICLE SPEED CONTROL' and month >= '2020-01-01'
+      group by make order by complaints desc limit 5
+    reviewed: false
+  - id: s39
+    set: holdout
+    question: "Which vehicle has the most complaints per owner in Australia?"
+    answer_pattern: "australia"
+    reviewed: false
+  - id: s40
+    set: holdout
+    question: "What share of the 2020 Chevrolet Bolt's complaints are severe?"
+    sql: |
+      select severe_share from vehicle_complaint_summary
+      where make = 'CHEVROLET' and model_family like 'BOLT%' and model_year = 2020
+    reviewed: false

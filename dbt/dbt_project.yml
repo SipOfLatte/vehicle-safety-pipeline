@@ -16,6 +16,10 @@ models:
     gold:
       +schema: GOLD
       +materialized: table
+      # The text-to-SQL assistant's read-only role (snowflake/08_ask_role.sql). dbt re-applies the grant
+      # on every run, because each run recreates the tables. rag_documents opts out in its own config.
+      +grants:
+        select: ["ASK_ROLE"]
     ai:
       +schema: AI
 

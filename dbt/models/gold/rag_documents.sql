@@ -5,6 +5,9 @@
   the text or metadata changes, so the embedding job only re-embeds what changed.
 #}
 
+-- Not for the text-to-SQL assistant: the gold-wide ASK_ROLE grant is replaced with none.
+{{ config(grants={'select': []}) }}
+
 with complaint_meta as (
 
     select
