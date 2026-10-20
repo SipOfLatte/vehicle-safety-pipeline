@@ -49,5 +49,5 @@ Day to day, `airflow_server.sh` wraps the SSM commands:
 - `./infra/airflow_server.sh deploy` pulls `main` on the server and restarts Airflow, rebuilding the image if the Dockerfile or requirements changed.
 - `./infra/airflow_server.sh status` shows the service, the containers and memory use.
 
-A CloudWatch alarm emails the alerts topic if the instance fails its status checks. Failed tasks email the same topic from Airflow.
+Three things email the alerts topic: failed Airflow tasks; a CloudWatch alarm when the instance fails its status checks; and an EventBridge rule when AWS warns of a Spot interruption, or the instance stops or starts again. A stopped instance sends no metrics and runs no Airflow, so that last rule is the only alert while the server is down.
 
