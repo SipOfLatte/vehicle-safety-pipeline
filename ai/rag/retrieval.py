@@ -27,10 +27,13 @@ class Filters:
     year_to: int | None = None
     component_group: str | None = None
     doc_type: str | None = None  # 'complaint', 'recall' or None for both
+    family_variants: list[str] = field(default_factory=list)  # electric/hybrid families searched with model_family
     dropped: list[str] = field(default_factory=list)  # filters removed because no data matched
 
     def describe(self) -> str:
         parts = [p for p in (self.make, self.model_family) if p]
+        if self.family_variants:
+            parts.append("also " + " / ".join(self.family_variants))
         if self.year_from and self.year_to and self.year_from != self.year_to:
             parts.append(f"{self.year_from}-{self.year_to}")
         elif self.year_from:
@@ -89,6 +92,20 @@ def _alnum(s: str) -> str:
     return re.sub(r"[^A-Z0-9]", "", s.upper())
 
 
+# NHTSA files some electric and hybrid versions as their own model family (CHARGER EV, KONA ELECTRIC,
+# RAV4 PRIME, WRANGLER 4XE), while the filter prompt strips powertrain words. Without this, "the electric
+# Charger" filtered to CHARGER and excluded the only relevant recall (eval question h02).
+POWERTRAIN_WORDS = {"EV", "BEV", "PHEV", "ELECTRIC", "(ELECTRIC)", "HYBRID", "E-HYBRID", "ACTIVEHYBRID", "PRIME", "ENERGI", "4XE"}
+
+
+def family_variants(family: str, families: set[str]) -> list[str]:
+    """Families named like `family` plus trailing words that end in a powertrain word, e.g. CHARGER -> CHARGER EV."""
+    return sorted(
+        f for f in families
+        if f.startswith(family + " ") and f.split()[-1] in POWERTRAIN_WORDS
+    )
+
+
 def validate_filters(f: Filters, vocabulary: dict[str, set[str]]) -> Filters:
     """Keep only filter values that exist in the data. vocabulary: make -> set of model families."""
     if f.make:
@@ -108,6 +125,7 @@ def validate_filters(f: Filters, vocabulary: dict[str, set[str]]) -> Filters:
             f.model_family = None
         else:
             f.model_family = family
+            f.family_variants = family_variants(family, families)
     if f.year_from and not f.year_to:
         f.year_to = f.year_from
     if f.year_to and not f.year_from:
@@ -124,8 +142,8 @@ def search_sql(f: Filters) -> tuple[str, dict]:
         where.append("array_contains(%(make)s::variant, makes)")
         params["make"] = f.make
     if f.model_family:
-        where.append("array_contains(%(model_family)s::variant, model_families)")
-        params["model_family"] = f.model_family
+        where.append("arrays_overlap(model_families, parse_json(%(model_families)s))")
+        params["model_families"] = json.dumps([f.model_family, *f.family_variants])
     if f.year_from and f.year_to:
         where.append("arrays_overlap(model_years, array_generate_range(%(year_from)s, %(year_to)s + 1))")
         params["year_from"], params["year_to"] = f.year_from, f.year_to

@@ -1,0 +1,1008 @@
+{
+  "summary": {
+    "recall": {
+      "questions": 10,
+      "hit_rate_at_5": 1.0,
+      "hit_rate_at_5_without_filters": 1.0,
+      "reviewed": 10
+    },
+    "complaint": {
+      "questions": 10,
+      "hit_rate_at_5": 1.0,
+      "hit_rate_at_5_without_filters": 1.0,
+      "reviewed": 10
+    },
+    "holdout": {
+      "questions": 10,
+      "hit_rate_at_5": 0.9,
+      "hit_rate_at_5_without_filters": 1.0,
+      "reviewed": 10
+    }
+  },
+  "results": [
+    {
+      "id": "r01",
+      "kind": "recall",
+      "question": "Is there a recall on the 2020 BMW X3 about something in the cargo area coming loose in a crash?",
+      "reviewed": true,
+      "filters": "BMW, X3, 2020, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 2,
+      "top5": [
+        {
+          "doc_id": "recall:24V534000",
+          "score": 0.6972
+        },
+        {
+          "doc_id": "recall:24V764000",
+          "score": 0.6768
+        },
+        {
+          "doc_id": "recall:20V152000",
+          "score": 0.6444
+        },
+        {
+          "doc_id": "recall:20V164000",
+          "score": 0.6214
+        },
+        {
+          "doc_id": "recall:23V211000",
+          "score": 0.6069
+        }
+      ]
+    },
+    {
+      "id": "r02",
+      "kind": "recall",
+      "question": "My 2021 Chevy Bolt already had the battery recall done. Is there a follow-up recall I still need?",
+      "reviewed": true,
+      "filters": "CHEVROLET, BOLT EV, 2021, FUEL AND PROPULSION, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 2,
+      "top5": [
+        {
+          "doc_id": "recall:21V650000",
+          "score": 0.6699
+        },
+        {
+          "doc_id": "recall:24V481000",
+          "score": 0.6679
+        },
+        {
+          "doc_id": "recall:24V812000",
+          "score": 0.6633
+        },
+        {
+          "doc_id": "recall:23V845000",
+          "score": 0.583
+        },
+        {
+          "doc_id": "recall:22V930000",
+          "score": 0.5821
+        }
+      ]
+    },
+    {
+      "id": "r03",
+      "kind": "recall",
+      "question": "Have there been steering recalls on the Ford Transit Trail because of corrosion?",
+      "reviewed": true,
+      "filters": "FORD, STEERING, recalls only",
+      "dropped_filters": [
+        "model TRANSIT TRAIL"
+      ],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:24V542000",
+          "score": 0.6723
+        },
+        {
+          "doc_id": "recall:24V591000",
+          "score": 0.6351
+        },
+        {
+          "doc_id": "recall:24V226000",
+          "score": 0.5877
+        },
+        {
+          "doc_id": "recall:18V275000",
+          "score": 0.5657
+        },
+        {
+          "doc_id": "recall:17V668000",
+          "score": 0.564
+        }
+      ]
+    },
+    {
+      "id": "r04",
+      "kind": "recall",
+      "question": "Can the side airbags on a 2019 Honda Odyssey go off on their own?",
+      "reviewed": true,
+      "filters": "HONDA, ODYSSEY, 2019, AIR BAGS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "complaint:11681984",
+          "score": 0.6856
+        },
+        {
+          "doc_id": "complaint:11522625",
+          "score": 0.6745
+        },
+        {
+          "doc_id": "complaint:11630898",
+          "score": 0.6688
+        },
+        {
+          "doc_id": "recall:26V227000",
+          "score": 0.5624
+        },
+        {
+          "doc_id": "recall:18V664000",
+          "score": 0.5192
+        }
+      ]
+    },
+    {
+      "id": "r05",
+      "kind": "recall",
+      "question": "Is there a problem with the second row power seats on the 2026 Hyundai Ioniq 9 not detecting people?",
+      "reviewed": true,
+      "filters": "HYUNDAI, IONIQ 9, 2026, SEATS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:26V588000",
+          "score": 0.7273
+        },
+        {
+          "doc_id": "complaint:11725010",
+          "score": 0.7001
+        },
+        {
+          "doc_id": "complaint:11741650",
+          "score": 0.5607
+        },
+        {
+          "doc_id": "complaint:11766164",
+          "score": 0.5549
+        },
+        {
+          "doc_id": "recall:26V314000",
+          "score": 0.5446
+        }
+      ]
+    },
+    {
+      "id": "r06",
+      "kind": "recall",
+      "question": "Is there a recall on the 2023 Jeep Grand Cherokee for the seat airbags not working properly?",
+      "reviewed": true,
+      "filters": "JEEP, GRAND CHEROKEE, 2023, AIR BAGS, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 2,
+      "top5": [
+        {
+          "doc_id": "recall:26V328000",
+          "score": 0.7359
+        },
+        {
+          "doc_id": "recall:24V434000",
+          "score": 0.733
+        },
+        {
+          "doc_id": "recall:24V897000",
+          "score": 0.7322
+        },
+        {
+          "doc_id": "recall:25V472000",
+          "score": 0.7168
+        },
+        {
+          "doc_id": "recall:23V336000",
+          "score": 0.7135
+        }
+      ]
+    },
+    {
+      "id": "r07",
+      "kind": "recall",
+      "question": "The backup camera on my 2019 Kia Sorento stops showing a picture after rain. Is that a known recall?",
+      "reviewed": true,
+      "filters": "KIA, SORENTO, 2019, VISIBILITY, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:23V639000",
+          "score": 0.7459
+        },
+        {
+          "doc_id": "recall:22V703000",
+          "score": 0.5099
+        },
+        {
+          "doc_id": "recall:23V652000",
+          "score": 0.4929
+        }
+      ]
+    },
+    {
+      "id": "r08",
+      "kind": "recall",
+      "question": "My Ram 2500 is leaking transmission fluid in the engine bay. Is there a recall for that?",
+      "reviewed": true,
+      "filters": "RAM, 2500, POWER TRAIN, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 2,
+      "top5": [
+        {
+          "doc_id": "recall:20V043000",
+          "score": 0.745
+        },
+        {
+          "doc_id": "recall:22V835000",
+          "score": 0.732
+        },
+        {
+          "doc_id": "recall:24V413000",
+          "score": 0.671
+        },
+        {
+          "doc_id": "recall:19V498000",
+          "score": 0.6339
+        },
+        {
+          "doc_id": "recall:17V562000",
+          "score": 0.6003
+        }
+      ]
+    },
+    {
+      "id": "r09",
+      "kind": "recall",
+      "question": "My 2020 Subaru Outback suddenly lost power while driving. Is there a transmission recall?",
+      "reviewed": true,
+      "filters": "SUBARU, OUTBACK, 2020, POWER TRAIN, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 2,
+      "top5": [
+        {
+          "doc_id": "recall:22V485000",
+          "score": 0.6708
+        },
+        {
+          "doc_id": "recall:21V955000",
+          "score": 0.6536
+        },
+        {
+          "doc_id": "recall:20V766000",
+          "score": 0.6022
+        },
+        {
+          "doc_id": "recall:24V227000",
+          "score": 0.5868
+        },
+        {
+          "doc_id": "recall:19V664000",
+          "score": 0.5671
+        }
+      ]
+    },
+    {
+      "id": "r10",
+      "kind": "recall",
+      "question": "Can the rear axle shaft come out of the housing on a 2022 Toyota Tacoma?",
+      "reviewed": true,
+      "filters": "TOYOTA, TACOMA, 2022, SUSPENSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:24V152000",
+          "score": 0.6929
+        },
+        {
+          "doc_id": "complaint:11543539",
+          "score": 0.4771
+        },
+        {
+          "doc_id": "complaint:11585485",
+          "score": 0.4753
+        },
+        {
+          "doc_id": "recall:22V520000",
+          "score": 0.4643
+        },
+        {
+          "doc_id": "complaint:11712539",
+          "score": 0.4478
+        }
+      ]
+    },
+    {
+      "id": "c01",
+      "kind": "complaint",
+      "question": "What engine problems do owners report on the 2017 Ford Escape?",
+      "reviewed": true,
+      "filters": "FORD, ESCAPE, 2017, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11764524",
+          "score": 0.7624
+        },
+        {
+          "doc_id": "complaint:11491263",
+          "score": 0.7128
+        },
+        {
+          "doc_id": "complaint:11654622",
+          "score": 0.7012
+        },
+        {
+          "doc_id": "complaint:11738580",
+          "score": 0.6867
+        },
+        {
+          "doc_id": "complaint:11634945",
+          "score": 0.6838
+        }
+      ]
+    },
+    {
+      "id": "c02",
+      "kind": "complaint",
+      "question": "Do 2019 Jeep Cherokee owners complain about the transmission?",
+      "reviewed": true,
+      "filters": "JEEP, CHEROKEE, 2019, POWER TRAIN, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 4,
+      "top5": [
+        {
+          "doc_id": "complaint:11610905",
+          "score": 0.6765
+        },
+        {
+          "doc_id": "complaint:11476874",
+          "score": 0.6651
+        },
+        {
+          "doc_id": "complaint:11723071",
+          "score": 0.6612
+        },
+        {
+          "doc_id": "complaint:11664338",
+          "score": 0.6564
+        },
+        {
+          "doc_id": "complaint:11650212",
+          "score": 0.6491
+        }
+      ]
+    },
+    {
+      "id": "c03",
+      "kind": "complaint",
+      "question": "What steering issues have people had with the 2022 Honda Civic?",
+      "reviewed": true,
+      "filters": "HONDA, CIVIC, 2022, STEERING",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 3,
+      "top5": [
+        {
+          "doc_id": "complaint:11598039",
+          "score": 0.79
+        },
+        {
+          "doc_id": "complaint:11755669",
+          "score": 0.7841
+        },
+        {
+          "doc_id": "complaint:11507955",
+          "score": 0.7815
+        },
+        {
+          "doc_id": "recall:23V704000",
+          "score": 0.6661
+        },
+        {
+          "doc_id": "recall:24V744000",
+          "score": 0.5905
+        }
+      ]
+    },
+    {
+      "id": "c04",
+      "kind": "complaint",
+      "question": "Are there complaints about engine failure on the 2016 Kia Sorento?",
+      "reviewed": true,
+      "filters": "KIA, SORENTO, 2016, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 4,
+      "top5": [
+        {
+          "doc_id": "complaint:11574167",
+          "score": 0.7449
+        },
+        {
+          "doc_id": "complaint:11568186",
+          "score": 0.7219
+        },
+        {
+          "doc_id": "complaint:11508563",
+          "score": 0.7148
+        },
+        {
+          "doc_id": "complaint:11585242",
+          "score": 0.713
+        },
+        {
+          "doc_id": "complaint:11442301",
+          "score": 0.7129
+        }
+      ]
+    },
+    {
+      "id": "c05",
+      "kind": "complaint",
+      "question": "What brake problems do owners describe on the 2018 Ram 3500?",
+      "reviewed": true,
+      "filters": "RAM, 3500, 2018, SERVICE BRAKES, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 3,
+      "top5": [
+        {
+          "doc_id": "complaint:11511816",
+          "score": 0.6819
+        },
+        {
+          "doc_id": "complaint:11548407",
+          "score": 0.646
+        },
+        {
+          "doc_id": "complaint:11419869",
+          "score": 0.6431
+        },
+        {
+          "doc_id": "complaint:11572275",
+          "score": 0.6407
+        },
+        {
+          "doc_id": "complaint:11419872",
+          "score": 0.6407
+        }
+      ]
+    },
+    {
+      "id": "c06",
+      "kind": "complaint",
+      "question": "Do 2021 Tesla Model Y owners report phantom braking with Autopilot?",
+      "reviewed": true,
+      "filters": "TESLA, MODEL Y, 2021, DRIVER ASSISTANCE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11481660",
+          "score": 0.7905
+        },
+        {
+          "doc_id": "complaint:11474390",
+          "score": 0.7799
+        },
+        {
+          "doc_id": "complaint:11450197",
+          "score": 0.7772
+        },
+        {
+          "doc_id": "complaint:11469078",
+          "score": 0.7714
+        },
+        {
+          "doc_id": "complaint:11471422",
+          "score": 0.77
+        }
+      ]
+    },
+    {
+      "id": "c07",
+      "kind": "complaint",
+      "question": "What do owners say about the engine on the 2017 Hyundai Santa Fe?",
+      "reviewed": true,
+      "filters": "HYUNDAI, SANTA FE, 2017, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11489952",
+          "score": 0.6903
+        },
+        {
+          "doc_id": "complaint:11525908",
+          "score": 0.6825
+        },
+        {
+          "doc_id": "complaint:11604406",
+          "score": 0.6649
+        },
+        {
+          "doc_id": "complaint:11589226",
+          "score": 0.6604
+        },
+        {
+          "doc_id": "complaint:11539808",
+          "score": 0.6426
+        }
+      ]
+    },
+    {
+      "id": "c08",
+      "kind": "complaint",
+      "question": "Are there engine complaints for the 2021 Chevrolet Silverado 1500?",
+      "reviewed": true,
+      "filters": "CHEVROLET, SILVERADO 1500, 2021, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11688216",
+          "score": 0.7358
+        },
+        {
+          "doc_id": "complaint:11761138",
+          "score": 0.7
+        },
+        {
+          "doc_id": "complaint:11769394",
+          "score": 0.6929
+        },
+        {
+          "doc_id": "complaint:11470443",
+          "score": 0.6904
+        },
+        {
+          "doc_id": "complaint:11438535",
+          "score": 0.6856
+        }
+      ]
+    },
+    {
+      "id": "c09",
+      "kind": "complaint",
+      "question": "What windshield or visibility problems are reported on the 2020 Subaru Outback?",
+      "reviewed": true,
+      "filters": "SUBARU, OUTBACK, 2020, VISIBILITY",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 3,
+      "top5": [
+        {
+          "doc_id": "complaint:11461151",
+          "score": 0.7115
+        },
+        {
+          "doc_id": "complaint:11443409",
+          "score": 0.7046
+        },
+        {
+          "doc_id": "complaint:11582464",
+          "score": 0.7004
+        },
+        {
+          "doc_id": "recall:20V766000",
+          "score": 0.6203
+        },
+        {
+          "doc_id": "recall:24V227000",
+          "score": 0.5645
+        }
+      ]
+    },
+    {
+      "id": "c10",
+      "kind": "complaint",
+      "question": "Do Fisker Ocean owners report brake problems?",
+      "reviewed": true,
+      "filters": "FISKER, OCEAN, SERVICE BRAKES, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11576167",
+          "score": 0.7053
+        },
+        {
+          "doc_id": "complaint:11588381",
+          "score": 0.7016
+        },
+        {
+          "doc_id": "complaint:11566212",
+          "score": 0.6919
+        },
+        {
+          "doc_id": "complaint:11582636",
+          "score": 0.686
+        },
+        {
+          "doc_id": "complaint:11590635",
+          "score": 0.6857
+        }
+      ]
+    },
+    {
+      "id": "h01",
+      "kind": "holdout",
+      "question": "My Corvette's front trunk lid popped open while I was driving. Is that a known issue?",
+      "reviewed": true,
+      "filters": "CHEVROLET, CORVETTE, LATCHES AND LOCKS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "complaint:11475347",
+          "score": 0.6274
+        },
+        {
+          "doc_id": "complaint:11603188",
+          "score": 0.5944
+        },
+        {
+          "doc_id": "complaint:11338933",
+          "score": 0.5646
+        },
+        {
+          "doc_id": "recall:20V489000",
+          "score": 0.5617
+        },
+        {
+          "doc_id": "recall:20V461000",
+          "score": 0.5194
+        }
+      ]
+    },
+    {
+      "id": "h02",
+      "kind": "holdout",
+      "question": "Does the electric Dodge Charger have a problem with the pedestrian warning sound?",
+      "reviewed": true,
+      "filters": "DODGE, CHARGER, EXTERIOR LIGHTING",
+      "dropped_filters": [],
+      "hit": false,
+      "hit_without_filters": true,
+      "relevant_in_top5": 0,
+      "top5": [
+        {
+          "doc_id": "complaint:11633899",
+          "score": 0.5875
+        },
+        {
+          "doc_id": "complaint:11422796",
+          "score": 0.579
+        },
+        {
+          "doc_id": "complaint:11728588",
+          "score": 0.5723
+        },
+        {
+          "doc_id": "recall:19V246000",
+          "score": 0.5304
+        },
+        {
+          "doc_id": "recall:24V112000",
+          "score": 0.5093
+        }
+      ]
+    },
+    {
+      "id": "h03",
+      "kind": "holdout",
+      "question": "On my Ford Maverick the turn signal doesn't blink faster when a rear bulb is out. Recall?",
+      "reviewed": true,
+      "filters": "FORD, MAVERICK, EXTERIOR LIGHTING, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 2,
+      "top5": [
+        {
+          "doc_id": "recall:23V848000",
+          "score": 0.7135
+        },
+        {
+          "doc_id": "recall:25V094000",
+          "score": 0.7005
+        },
+        {
+          "doc_id": "recall:24V293000",
+          "score": 0.6234
+        },
+        {
+          "doc_id": "recall:25V095000",
+          "score": 0.6177
+        },
+        {
+          "doc_id": "recall:23V160000",
+          "score": 0.589
+        }
+      ]
+    },
+    {
+      "id": "h04",
+      "kind": "holdout",
+      "question": "Could the passenger airbag deploy too hard on a 2025 GMC Canyon AT4X?",
+      "reviewed": true,
+      "filters": "GMC, CANYON, 2025, AIR BAGS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:25V856000",
+          "score": 0.6151
+        },
+        {
+          "doc_id": "complaint:11683406",
+          "score": 0.4958
+        },
+        {
+          "doc_id": "complaint:11708852",
+          "score": 0.45
+        },
+        {
+          "doc_id": "recall:26V114000",
+          "score": 0.3635
+        },
+        {
+          "doc_id": "complaint:11701507",
+          "score": 0.3081
+        }
+      ]
+    },
+    {
+      "id": "h05",
+      "kind": "holdout",
+      "question": "Is the middle rear seat belt safe in a 2025 Hyundai Kona?",
+      "reviewed": true,
+      "filters": "HYUNDAI, KONA, 2025, SEAT BELTS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:26V452000",
+          "score": 0.6989
+        },
+        {
+          "doc_id": "complaint:11631039",
+          "score": 0.6053
+        },
+        {
+          "doc_id": "complaint:11680468",
+          "score": 0.603
+        },
+        {
+          "doc_id": "complaint:11721002",
+          "score": 0.5663
+        },
+        {
+          "doc_id": "recall:26V047000",
+          "score": 0.4791
+        }
+      ]
+    },
+    {
+      "id": "h06",
+      "kind": "holdout",
+      "question": "My 2017 Mazda3 wipers just stopped working in the rain. Anything on that?",
+      "reviewed": true,
+      "filters": "MAZDA, MAZDA3, 2017, VISIBILITY",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:19V272000",
+          "score": 0.6054
+        },
+        {
+          "doc_id": "complaint:11584492",
+          "score": 0.5639
+        },
+        {
+          "doc_id": "complaint:11494158",
+          "score": 0.5023
+        },
+        {
+          "doc_id": "complaint:11493694",
+          "score": 0.4577
+        },
+        {
+          "doc_id": "recall:23V487000",
+          "score": 0.3784
+        }
+      ]
+    },
+    {
+      "id": "h07",
+      "kind": "holdout",
+      "question": "Are there engine oil problems with the turbo engine in newer Nissan Rogues?",
+      "reviewed": true,
+      "filters": "NISSAN, ROGUE, ENGINE",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:26V080000",
+          "score": 0.6355
+        },
+        {
+          "doc_id": "complaint:11770588",
+          "score": 0.6233
+        },
+        {
+          "doc_id": "complaint:11694780",
+          "score": 0.6192
+        },
+        {
+          "doc_id": "complaint:11609538",
+          "score": 0.6188
+        },
+        {
+          "doc_id": "recall:26V081000",
+          "score": 0.5761
+        }
+      ]
+    },
+    {
+      "id": "h08",
+      "kind": "holdout",
+      "question": "Can the suspension break on a 2021 Tesla Model Y?",
+      "reviewed": true,
+      "filters": "TESLA, MODEL Y, 2021, SUSPENSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 2,
+      "top5": [
+        {
+          "doc_id": "complaint:11757712",
+          "score": 0.7014
+        },
+        {
+          "doc_id": "complaint:11552039",
+          "score": 0.6772
+        },
+        {
+          "doc_id": "complaint:11763387",
+          "score": 0.6654
+        },
+        {
+          "doc_id": "recall:21V912000",
+          "score": 0.648
+        },
+        {
+          "doc_id": "recall:21V835000",
+          "score": 0.609
+        }
+      ]
+    },
+    {
+      "id": "h09",
+      "kind": "holdout",
+      "question": "Why would a 2020 Toyota Yaris stall? I heard something about the fuel pump.",
+      "reviewed": true,
+      "filters": "TOYOTA, YARIS, 2020, FUEL AND PROPULSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:21V617000",
+          "score": 0.6979
+        },
+        {
+          "doc_id": "complaint:11438478",
+          "score": 0.5746
+        },
+        {
+          "doc_id": "complaint:11395251",
+          "score": 0.5131
+        },
+        {
+          "doc_id": "complaint:11544389",
+          "score": 0.5087
+        },
+        {
+          "doc_id": "recall:19V244000",
+          "score": 0.4081
+        }
+      ]
+    },
+    {
+      "id": "h10",
+      "kind": "holdout",
+      "question": "Is there anything wrong with the front strut mounts on a 2023 VW GTI?",
+      "reviewed": true,
+      "filters": "VOLKSWAGEN, GTI, 2023, SUSPENSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:23V437000",
+          "score": 0.6486
+        },
+        {
+          "doc_id": "recall:22V707000",
+          "score": 0.4264
+        },
+        {
+          "doc_id": "complaint:11624393",
+          "score": 0.4116
+        },
+        {
+          "doc_id": "complaint:11632262",
+          "score": 0.3364
+        },
+        {
+          "doc_id": "complaint:11663484",
+          "score": 0.3255
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 from ai.rag.answer import build_messages, cited_ids
 from ai.rag.retrieval import Doc, Filters, filter_schema, search_sql, validate_filters
 
-VOCAB = {"TESLA": {"MODEL Y", "MODEL 3"}, "FORD": {"F-150", "ESCAPE"}, "MERCEDES-BENZ": {"C300"}}
+VOCAB = {"TESLA": {"MODEL Y", "MODEL 3"}, "FORD": {"F-150", "F-150 LIGHTNING BEV", "ESCAPE"}, "MERCEDES-BENZ": {"C300"},
+         "DODGE": {"CHARGER", "CHARGER EV", "CHARGER DAYTONA"}}
 
 
 def doc(doc_id, text="Brakes failed.", doc_type="complaint"):
@@ -22,6 +23,13 @@ def test_validate_filters_drops_unknown_values_instead_of_filtering_everything_o
     assert f.make is None and f.model_family is None and f.dropped == ["make ACME"]
 
 
+def test_validate_filters_adds_electric_and_hybrid_families():
+    f = validate_filters(Filters(make="DODGE", model_family="CHARGER"), VOCAB)
+    assert f.model_family == "CHARGER" and f.family_variants == ["CHARGER EV"]  # not CHARGER DAYTONA
+    assert validate_filters(Filters(make="FORD", model_family="F-150"), VOCAB).family_variants == ["F-150 LIGHTNING BEV"]
+    assert validate_filters(Filters(make="TESLA", model_family="MODEL Y"), VOCAB).family_variants == []
+
+
 def test_validate_filters_swaps_reversed_year_range():
     f = validate_filters(Filters(year_from=2024, year_to=2020), VOCAB)
     assert (f.year_from, f.year_to) == (2020, 2024)
@@ -30,7 +38,7 @@ def test_validate_filters_swaps_reversed_year_range():
 def test_search_sql_binds_every_filter_value():
     sql, params = search_sql(Filters(make="TESLA", model_family="MODEL Y", year_from=2022, year_to=2023,
                                      component_group="SERVICE BRAKES", doc_type="recall"))
-    assert params == {"make": "TESLA", "model_family": "MODEL Y", "year_from": 2022, "year_to": 2023,
+    assert params == {"make": "TESLA", "model_families": '["MODEL Y"]', "year_from": 2022, "year_to": 2023,
                       "doc_type": "recall"}  # component_group is deliberately not a filter
     for value in params.values():
         assert str(value) not in sql  # values are bound, never pasted into the SQL

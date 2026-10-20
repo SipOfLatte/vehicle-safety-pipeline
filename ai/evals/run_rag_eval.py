@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -24,15 +25,17 @@ HERE = Path(__file__).parent
 K = 5
 
 
-def is_hit(kind: str, relevant, doc) -> bool:
+def is_hit(kind: str, q: dict, doc) -> bool:
+    relevant = q["relevant"]
     if kind in ("recall", "holdout"):
-        return doc.doc_id == relevant
+        return doc.doc_id in ([relevant] if isinstance(relevant, str) else relevant)
     return (
         doc.doc_type == "complaint"
         and relevant["make"] in doc.makes
         and str(relevant["model_family"]) in doc.model_families
         and relevant["model_year"] in doc.model_years
         and relevant["component_group"] in doc.component_groups
+        and re.search(q.get("text_pattern", ""), doc.text, re.IGNORECASE) is not None
     )
 
 
@@ -56,9 +59,9 @@ def main() -> None:
                 row = {
                     "id": q["id"], "kind": kind, "question": q["question"], "reviewed": q.get("reviewed", False),
                     "filters": filters.describe(), "dropped_filters": filters.dropped,
-                    "hit": any(is_hit(kind, q["relevant"], d) for d in filtered),
-                    "hit_without_filters": any(is_hit(kind, q["relevant"], d) for d in unfiltered),
-                    "relevant_in_top5": sum(is_hit(kind, q["relevant"], d) for d in filtered),
+                    "hit": any(is_hit(kind, q, d) for d in filtered),
+                    "hit_without_filters": any(is_hit(kind, q, d) for d in unfiltered),
+                    "relevant_in_top5": sum(is_hit(kind, q, d) for d in filtered),
                     "top5": [{"doc_id": d.doc_id, "score": round(d.score, 4)} for d in filtered],
                 }
                 if args.answers and filtered:
