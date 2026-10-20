@@ -1,4 +1,4 @@
-# Infrastructure setup (week 1)
+# Infrastructure setup
 
 Terraform creates the S3 data lake, the IAM role Snowflake uses to read it, an AWS budget and the SNS alert topic. Snowflake objects are created by the SQL scripts in `snowflake/`, run in Snowsight.
 
@@ -12,6 +12,42 @@ The Snowflake storage integration and the IAM role each need an identifier from 
 6. Upload the files: from `ingestion/`, run `python nhtsa_ingest.py --bucket <bucket_name>`. It prints the S3 key of each file it uploads.
 7. Put that load date into `snowflake/04_load_bronze.sql` and run it. The row counts at the bottom should match the counts in `docs/data_profile.md`, give or take a day's new complaints.
 
-The AWS budget is set to USD 15/month, the AWS share of the USD 40 project cap. Snowflake is limited by its resource monitors, and Claude by a spend limit set in the Anthropic console.
+The AWS budget is set to USD 25/month, the AWS share of the USD 40 project cap: the Airflow server below is about USD 18 of it. Snowflake is limited by its resource monitors, and Claude by a spend limit set in the Anthropic console.
 
 Terraform state is local and gitignored for now. Move it to an S3 backend before CI runs Terraform.
+
+## Service users (Snowflake)
+
+Each runs with its own key pair and role. Generate the key with the commands in `snowflake/06_service_user.sql` and paste the public key into the script before running it.
+
+- `06_service_user.sql`: `DBT_PIPELINE`, used by Airflow and dbt.
+- `07_app_user.sql`: `APP_READER` with `APP_ROLE`, used by the Streamlit chatbot.
+- `08_ask_role.sql`: `ASK_ROLE`, the read-only role for SQL the text-to-SQL assistant writes. It also turns off secondary roles for `APP_READER` and revokes Cortex from `PUBLIC`.
+- `09_ci_user.sql`: `CI_DBT`, used by GitHub Actions to build into the `CI_*` schemas.
+
+## Airflow server (EC2)
+
+Airflow runs the same Astro project as on a laptop, on one t4g.medium Spot instance (`ec2.tf`). The instance has no inbound ports and is reached through AWS Systems Manager. If AWS reclaims the Spot capacity, the instance stops and starts again later with its disk intact. On every boot a systemd service, `vsp-airflow`, reads the Snowflake settings from SSM Parameter Store, writes `airflow/.env` and the key file, starts Airflow and unpauses the DAGs.
+
+To create it:
+
+1. Store the Snowflake settings. The key is a SecureString read from the file, so it never passes through Terraform:
+
+   ```
+   aws ssm put-parameter --name /vehicle-safety/snowflake_account --type String --value <org>-<account>
+   aws ssm put-parameter --name /vehicle-safety/snowflake_user --type String --value DBT_PIPELINE
+   aws ssm put-parameter --name /vehicle-safety/snowflake_private_key --type SecureString \
+     --value file://$HOME/.snowflake/keys/dbt_pipeline_key.p8
+   ```
+
+2. Add `airflow_enabled = true` to `terraform.tfvars` and run `terraform apply`. The first boot takes about four minutes.
+3. Stop Airflow on the laptop (`astro dev stop` in `airflow/`), or both copies run the daily DAG.
+
+Day to day, `airflow_server.sh` wraps the SSM commands:
+
+- `./infra/airflow_server.sh ui` opens the Airflow UI at http://localhost:8080. It needs the Session Manager plugin (`brew install --cask session-manager-plugin`).
+- `./infra/airflow_server.sh deploy` pulls `main` on the server and restarts Airflow, rebuilding the image if the Dockerfile or requirements changed.
+- `./infra/airflow_server.sh status` shows the service, the containers and memory use.
+
+A CloudWatch alarm emails the alerts topic if the instance fails its status checks. Failed tasks email the same topic from Airflow.
+
