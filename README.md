@@ -2,7 +2,7 @@
 
 A daily data pipeline on US vehicle safety data from NHTSA (the National Highway Traffic Safety Administration). Owner complaints and recall notices land in S3, load into Snowflake, and dbt models them through bronze, silver and gold layers. Two AI features will sit on the gold layer: a chatbot that answers questions from complaint and recall text and cites the records it used, and a text-to-SQL assistant over the gold tables.
 
-The project is being built over about six weeks. Weeks 1 and 2 are done: infrastructure, ingestion, the load into Snowflake, and the dbt silver layer. Everything below marked "planned" isn't built yet.
+The project is being built over about six weeks. Weeks 1 to 3 are done: infrastructure, ingestion, the load into Snowflake, the dbt silver and gold layers, and an Airflow DAG that runs it all daily (locally for now). Everything below marked "planned" isn't built yet.
 
 ## Architecture
 
@@ -39,8 +39,8 @@ Airflow, daily: check for new files → S3 → COPY → dbt build → embed new 
 | Infrastructure | Terraform for S3, IAM, the AWS budget and SNS alerts | Built |
 | Ingestion | Python: ETag check, download, MD5 check, gzip, upload | Built |
 | Warehouse | Snowflake, two X-Small warehouses with resource monitors | Built |
-| Transformation | dbt Core: silver layer with incremental models for the large tables | Silver built; gold planned (week 3) |
-| Orchestration | Airflow via Astronomer Cosmos, on an EC2 Spot instance | Planned (weeks 3 and 6) |
+| Transformation | dbt Core: silver and gold layers, incremental models for the large tables | Built |
+| Orchestration | Airflow 3 via Astronomer Cosmos, failure alerts by email through SNS | Built and running locally; EC2 Spot planned (week 6) |
 | Embeddings and retrieval | Snowflake Cortex embeddings (Voyage AI as fallback), hand-written cosine similarity search with metadata filters | Planned (week 4) |
 | LLM | Claude API | Planned (weeks 4 and 5) |
 | App | Streamlit Community Cloud | Planned (weeks 4 and 5) |
@@ -89,6 +89,22 @@ Make and model names are standardized in `vehicle_name_map`, using rules rather 
 
 These rules change the name on 2.4% of complaint and recall rows. Component names are grouped through another seed that maps NHTSA's 54 top-level component names to 28 groups, for example `SERVICE BRAKES` and `SERVICE BRAKES, HYDRAULIC`. dbt runs 46 tests on the silver layer and its sources: keys, relationships between tables, accepted values and year ranges.
 
+## Gold layer
+
+Gold holds the tables the app and the text-to-SQL assistant query. NHTSA publishes no sales figures, so everything here is a count of complaints, not a rate per vehicle sold.
+
+| Model | What it answers | Rows (20 Oct 2026) |
+|---|---|---|
+| `fct_complaints_monthly` | Complaints per month, vehicle and component group, with crash, fire, injury and death counts | 1,387,542 |
+| `vehicle_risk_summary` | Per make, model family and model year: complaints, share that report a crash, fire, injury or death, recall campaigns | 31,992 |
+| `recall_coverage` | Complaints and recalls side by side per vehicle and component group, to find complaint clusters with no matching recall | 198,244 |
+| `component_trends` | Monthly complaints per vehicle and component group against the average of the three months before, with a flag for sharp rises | 90,632 |
+| `rag_documents` | Text for the chatbot: 427,782 complaints received since 2020 and 13,689 vehicle recalls since 2010 | 441,471 |
+
+Two examples of what they show. For 2018 Ford Escapes, 1,444 complaints are about the engine and no recall matches that model year and component group. In September 2026, Ford Edge engine complaints reached 98, against an average of 35 over the previous three months. A recall can still cover a problem under a different component group, so `recall_coverage` points at places to look rather than proving a gap.
+
+The descriptions in `dbt/models/gold/_gold.yml` are written for the text-to-SQL assistant, since they will be its only description of the tables.
+
 ## How ingestion works
 
 [`ingestion/nhtsa_ingest.py`](ingestion/nhtsa_ingest.py) sends a HEAD request for each file first. NHTSA's `ETag` header is the zip's MD5, so an unchanged ETag means the file can be skipped. When a file has changed, the script downloads it, checks the MD5, and re-compresses the text inside as gzip, because Snowflake's `COPY` can't read zip files. It uploads the result to `s3://<bucket>/bronze/<dataset>/load_date=YYYY-MM-DD/` and writes a small manifest. If the lifecycle rule has deleted the last copy, the script uploads the file again even if the ETag hasn't changed.
@@ -112,11 +128,12 @@ Measured costs will go here once the pipeline runs daily.
 infra/       Terraform: S3, IAM, budget, SNS. Setup steps in infra/README.md
 ingestion/   Download and S3 upload, with unit tests
 snowflake/   Setup and bronze load SQL
-dbt/         dbt project: silver models, seeds and tests
+dbt/         dbt project: silver and gold models, seeds and tests
+airflow/     Astro project: the daily and weekly DAGs, DAG tests
 docs/        Data profile and NHTSA field descriptions
 ```
 
-Airflow, the gold models, the AI code and the app will be added in later weeks.
+The AI code and the app will be added in later weeks.
 
 ## Running it
 

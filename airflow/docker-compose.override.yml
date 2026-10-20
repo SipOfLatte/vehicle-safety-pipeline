@@ -1,0 +1,15 @@
+# Local development only: mount the dbt project, ingestion code and credentials into the
+# containers that parse DAGs and run tasks. Credentials stay on the host and are read-only.
+# On EC2 (week 6) the code is copied into the image and AWS access comes from an instance role.
+x-pipeline-mounts: &pipeline-mounts
+  volumes:
+    - ../dbt:/usr/local/airflow/dbt
+    - ../ingestion:/usr/local/airflow/ingestion:ro
+    - ${HOME}/.snowflake/keys:/usr/local/airflow/keys:ro
+    - ${HOME}/.aws:/home/astro/.aws:ro
+
+services:
+  scheduler:
+    <<: *pipeline-mounts
+  dag-processor:
+    <<: *pipeline-mounts

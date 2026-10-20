@@ -1,0 +1,4 @@
+astronomer-cosmos==1.15.1
+boto3==1.43.115
+certifi==2026.7.22
+snowflake-connector-python==5.0.0
