@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 from airflow.sdk import dag, task
 from cosmos import DbtTaskGroup
 
-from common import DBT_EXECUTION, DBT_PROFILE, DBT_PROJECT, dbt_render, notify_failure
+from common import DBT_EXECUTION, DBT_PROFILE, DBT_PROJECT, block_on_detached_tests, dbt_render, notify_failure
 
 
 @dag(
@@ -65,6 +65,7 @@ def nhtsa_daily():
         execution_config=DBT_EXECUTION,
         render_config=dbt_render(),
     )
+    block_on_detached_tests(dbt_build.children.values())
 
     loaded >> dbt_build >> health_check()
 
