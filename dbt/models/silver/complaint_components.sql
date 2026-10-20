@@ -5,12 +5,14 @@
   rebuilding this table.
 
   Incremental: rebuilds the rows of complaints that complaints.sql just inserted or changed.
+  Rows of complaints NHTSA has removed are deleted by the post-hook.
 #}
 -- depends_on: {{ ref('complaints') }}
 {{ config(
     materialized='incremental',
     unique_key='odino',
     incremental_strategy='delete+insert',
+    post_hook="{{ delete_complaints_missing_from_bronze() if is_incremental() }}",
 ) }}
 
 with deduped as (

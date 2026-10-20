@@ -79,7 +79,7 @@ The dbt project in [`dbt/`](dbt/) turns the raw rows into seven tables:
 | `dim_vehicle` | standardized make × model × model year | 87,594 |
 | `dim_component` | one component name, split into its hierarchy | 819 |
 
-`complaints` and `complaint_components` are incremental. NHTSA sends a full snapshot every day, so each run hashes every complaint's source rows and merges only the complaints that are new or changed. The hash leaves out `CMPLID`, which NHTSA can renumber without anything else changing. A rerun on the same snapshot changes 0 rows.
+`complaints` and `complaint_components` are incremental. NHTSA sends a full snapshot every day, so each run hashes every complaint's source rows and merges only the complaints that are new or changed. The hash leaves out `CMPLID`, which NHTSA can renumber without anything else changing. A rerun on the same snapshot changes 0 rows. Because each snapshot is complete, a complaint that NHTSA removes is deleted from silver after the next run, and a test checks that silver and bronze hold exactly the same complaints. The delete is skipped if bronze looks incomplete (fewer than 95% of silver's complaints), so a bad load can't empty silver.
 
 Make and model names are standardized in `vehicle_name_map`, using rules rather than a hand-written list:
 
@@ -87,7 +87,7 @@ Make and model names are standardized in `vehicle_name_map`, using rules rather 
 - A model family drops trailing powertrain and drivetrain words, so `CAMRY HYBRID` stays a model but belongs to the family `CAMRY`.
 - A small seed file overrides the cases the rules get wrong, such as `ROBOTAXI (MODEL Y)`.
 
-These rules change the name on 2.4% of complaint and recall rows. Component names are grouped through another seed that maps NHTSA's 54 top-level component names to 28 groups, for example `SERVICE BRAKES` and `SERVICE BRAKES, HYDRAULIC`. dbt runs 45 tests on the silver layer and its sources: keys, relationships between tables, accepted values and year ranges.
+These rules change the name on 2.4% of complaint and recall rows. Component names are grouped through another seed that maps NHTSA's 54 top-level component names to 28 groups, for example `SERVICE BRAKES` and `SERVICE BRAKES, HYDRAULIC`. dbt runs 46 tests on the silver layer and its sources: keys, relationships between tables, accepted values and year ranges.
 
 ## How ingestion works
 

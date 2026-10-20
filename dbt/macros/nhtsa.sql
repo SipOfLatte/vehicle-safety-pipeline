@@ -30,6 +30,21 @@
     md5({% for c in cols %}coalesce(trim({{ c }}), ''){% if not loop.last %} || '|' || {% endif %}{% endfor %})
 {%- endmacro %}
 
+{#
+  Post-hook for incremental models fed by a full daily snapshot: delete rows whose
+  complaint is no longer in bronze, i.e. NHTSA removed it. Skipped unless bronze holds
+  at least 95% as many complaints as the model, so a broken or partial load can't empty silver.
+#}
+{% macro delete_complaints_missing_from_bronze() -%}
+    delete from {{ this }} as t
+    where not exists (
+        select 1 from {{ source('bronze', 'complaints') }} as b
+        where trim(b.odino) = t.odino
+    )
+    and (select count(distinct trim(odino)) from {{ source('bronze', 'complaints') }})
+        >= 0.95 * (select count(distinct odino) from {{ this }})
+{%- endmacro %}
+
 {% macro vehicle_name_key(make_col, model_col) -%}
     md5(coalesce({{ make_col }}, '') || '|' || coalesce({{ model_col }}, ''))
 {%- endmacro %}

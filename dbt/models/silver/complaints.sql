@@ -5,12 +5,14 @@
   Incremental: bronze is a full snapshot every day, so each run hashes every complaint's
   source rows and only merges complaints that are new or whose rows changed. CMPLID is
   left out of the hash because NHTSA can renumber it without anything else changing.
+  Complaints NHTSA has removed are deleted by the post-hook.
 #}
 {{ config(
     materialized='incremental',
     unique_key='odino',
     incremental_strategy='merge',
     on_schema_change='append_new_columns',
+    post_hook="{{ delete_complaints_missing_from_bronze() if is_incremental() }}",
 ) }}
 
 {% set hashed_cols = [
