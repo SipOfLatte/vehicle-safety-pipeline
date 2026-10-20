@@ -1,0 +1,185 @@
+version: 2
+
+# These descriptions are the text-to-SQL assistant's whole picture of the data. Keep them exact.
+
+models:
+  - name: fct_complaints_monthly
+    description: >
+      Vehicle safety complaints filed with NHTSA (the US National Highway Traffic Safety
+      Administration), counted per month received, make, model family, model year and
+      component group. Covers complaints since 1995. A complaint about two component groups
+      is counted once in each group, so summing complaints across component groups
+      overcounts; use vehicle_risk_summary for per-vehicle totals.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [month, make, model_family, model_year, component_group]
+    columns:
+      - name: month
+        description: First day of the month NHTSA received the complaints.
+        data_tests: [not_null]
+      - name: make
+        description: Standardized manufacturer brand in upper case, e.g. TOYOTA, FORD, TESLA, MERCEDES-BENZ.
+        data_tests: [not_null]
+      - name: model_family
+        description: >
+          Standardized model name in upper case, with powertrain and drivetrain variants
+          grouped, e.g. CAMRY covers CAMRY and CAMRY HYBRID; F-150 covers F150 and F-150 HYBRID;
+          MODEL Y for Tesla's Model Y.
+      - name: model_year
+        description: Vehicle model year. NULL when the owner didn't know it.
+      - name: component_group
+        description: >
+          What the complaint is about, one of 28 groups, e.g. AIR BAGS, SERVICE BRAKES, ENGINE,
+          POWER TRAIN, ELECTRICAL SYSTEM, STEERING, STRUCTURE, SUSPENSION, VEHICLE SPEED CONTROL,
+          FUEL AND PROPULSION, DRIVER ASSISTANCE, SEAT BELTS, TIRES, UNKNOWN OR OTHER.
+        data_tests: [not_null]
+      - name: complaints
+        description: Number of complaints.
+        data_tests: [not_null]
+      - name: crash_complaints
+        description: Complaints that report a crash.
+      - name: fire_complaints
+        description: Complaints that report a fire.
+      - name: injury_complaints
+        description: Complaints that report at least one injury.
+      - name: fatal_complaints
+        description: Complaints that report at least one death.
+      - name: injured
+        description: People injured, as reported by owners.
+      - name: deaths
+        description: Deaths, as reported by owners.
+
+  - name: vehicle_risk_summary
+    description: >
+      One row per make, model family and model year with complaint totals, severity and recall
+      campaign counts. NHTSA publishes no sales figures, so these are raw counts; a popular
+      model gets more complaints because more of them are on the road. A complaint is severe
+      if it reports a crash, fire, injury or death.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [make, model_family, model_year]
+    columns:
+      - name: make
+        description: Standardized manufacturer brand in upper case.
+        data_tests: [not_null]
+      - name: model_family
+        description: Standardized model name in upper case, variants grouped (CAMRY includes CAMRY HYBRID).
+      - name: model_year
+        description: Vehicle model year. NULL when unknown.
+      - name: complaints
+        description: Number of complaints about this vehicle.
+        data_tests: [not_null]
+      - name: severe_complaints
+        description: Complaints reporting a crash, fire, injury or death.
+      - name: severe_share
+        description: severe_complaints divided by complaints, between 0 and 1.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: crash_complaints
+        description: Complaints reporting a crash.
+      - name: fire_complaints
+        description: Complaints reporting a fire.
+      - name: injured
+        description: People injured, as reported by owners.
+      - name: deaths
+        description: Deaths, as reported by owners.
+      - name: top_component_group
+        description: The component group with the most complaints for this vehicle.
+      - name: recall_campaigns
+        description: Number of NHTSA recall campaigns covering this make, model family and model year (any component).
+        data_tests: [not_null]
+      - name: do_not_drive_recalls
+        description: Recall campaigns where NHTSA advised owners not to drive the vehicle until repaired.
+      - name: first_complaint_date
+        description: Date the first complaint was received.
+      - name: latest_complaint_date
+        description: Date the most recent complaint was received.
+      - name: latest_recall_date
+        description: Date NHTSA received the most recent recall report. NULL if never recalled.
+
+  - name: recall_coverage
+    description: >
+      Complaints and recalls side by side for each make, model family, model year and component
+      group. has_recall = false with many complaints marks a complaint cluster without a recall
+      for that component group. Matching is by component group only, so a recall here may not
+      fix the exact problem owners describe. Rows with an unknown model year are excluded.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [make, model_family, model_year, component_group]
+    columns:
+      - name: make
+        description: Standardized manufacturer brand in upper case.
+      - name: model_family
+        description: Standardized model name in upper case, variants grouped.
+      - name: model_year
+        description: Vehicle model year.
+        data_tests: [not_null]
+      - name: component_group
+        description: Component group, one of 28 (see fct_complaints_monthly).
+      - name: complaints
+        description: Complaints for this vehicle and component group.
+      - name: severe_complaints
+        description: Of those, complaints reporting a crash, fire, injury or death.
+      - name: first_complaint_date
+        description: Date the first of these complaints was received.
+      - name: latest_complaint_date
+        description: Date the most recent of these complaints was received.
+      - name: recall_campaigns
+        description: Recall campaigns for the same vehicle and component group.
+      - name: has_recall
+        description: True if at least one recall campaign matches.
+        data_tests: [not_null]
+      - name: campaign_numbers
+        description: Array of the matching NHTSA recall campaign numbers, e.g. 23V838000.
+
+  - name: component_trends
+    description: >
+      Monthly complaints per make, model family and component group (all model years combined)
+      for the last 36 complete months, compared with the average of the three months before.
+      is_rising flags months with at least 10 complaints and at least twice the prior average.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [make, model_family, component_group, month]
+    columns:
+      - name: make
+        description: Standardized manufacturer brand in upper case.
+      - name: model_family
+        description: Standardized model name in upper case, variants grouped.
+      - name: component_group
+        description: Component group, one of 28.
+      - name: month
+        description: First day of the month.
+      - name: complaints
+        description: Complaints received that month.
+      - name: prior_3_month_avg
+        description: Average monthly complaints over the three months before; months without complaints count as 0.
+      - name: ratio_to_prior
+        description: complaints divided by prior_3_month_avg. NULL when the prior average is 0.
+      - name: is_rising
+        description: True when complaints >= 10 and complaints >= 2 × prior_3_month_avg.
+
+  - name: rag_documents
+    description: >
+      Text documents for the RAG chatbot: vehicle complaints received since 2020 and recall
+      campaigns since 2010. Not meant for analytics queries.
+    columns:
+      - name: doc_id
+        description: complaint:<ODINO> or recall:<campaign number>.
+        data_tests: [unique, not_null]
+      - name: doc_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['complaint', 'recall']
+      - name: text
+        data_tests: [not_null]
+      - name: content_hash
+        description: Changes when text or metadata changes; drives incremental embedding.
+        data_tests: [not_null]

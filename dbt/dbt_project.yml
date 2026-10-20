@@ -13,6 +13,9 @@ models:
     silver:
       +schema: SILVER
       +materialized: table
+    gold:
+      +schema: GOLD
+      +materialized: table
 
 seeds:
   vehicle_safety:
