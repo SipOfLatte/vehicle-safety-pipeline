@@ -9,7 +9,7 @@ models:
       Administration), counted per month received, make, model family, model year and
       component group. Covers complaints since 1995. A complaint about two component groups
       is counted once in each group, so summing complaints across component groups
-      overcounts; use vehicle_risk_summary for per-vehicle totals.
+      overcounts; use vehicle_complaint_summary for per-vehicle totals.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -50,12 +50,14 @@ models:
       - name: deaths
         description: Deaths, as reported by owners.
 
-  - name: vehicle_risk_summary
+  - name: vehicle_complaint_summary
     description: >
       One row per make, model family and model year with complaint totals, severity and recall
-      campaign counts. NHTSA publishes no sales figures, so these are raw counts; a popular
-      model gets more complaints because more of them are on the road. A complaint is severe
-      if it reports a crash, fire, injury or death.
+      campaign counts. IMPORTANT: NHTSA publishes no sales figures, so complaint totals are
+      counts, not rates per vehicle sold. Best-selling models (e.g. FORD F-150, TOYOTA CAMRY)
+      get more complaints because more of them are on the road, not necessarily because they
+      have more problems. When ranking or comparing vehicles, prefer severe_share, and say the
+      totals are counts. A complaint is severe if it reports a crash, fire, injury or death.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -68,18 +70,30 @@ models:
         description: Standardized model name in upper case, variants grouped (CAMRY includes CAMRY HYBRID).
       - name: model_year
         description: Vehicle model year. NULL when unknown.
-      - name: complaints
-        description: Number of complaints about this vehicle.
-        data_tests: [not_null]
-      - name: severe_complaints
-        description: Complaints reporting a crash, fire, injury or death.
       - name: severe_share
-        description: severe_complaints divided by complaints, between 0 and 1.
+        description: >
+          Share of this vehicle's complaints that report a crash, fire, injury or death, between
+          0 and 1. Doesn't depend on sales volume, so it is the fairest way to compare vehicles.
+          Noisy for vehicles with few complaints; filter to complaints >= 30 when ranking.
         data_tests:
           - dbt_utils.accepted_range:
               arguments:
                 min_value: 0
                 max_value: 1
+      - name: complaints
+        description: Number of complaints about this vehicle. A count, not a rate; it rises with sales volume.
+        data_tests: [not_null]
+      - name: complaints_percentile_in_model_year
+        description: >
+          Where this vehicle's complaint count sits among all vehicles of the same model year,
+          from 0 (fewest) to 1 (most). Still driven by sales volume; use it for context, not as a risk score.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: severe_complaints
+        description: Complaints reporting a crash, fire, injury or death.
       - name: crash_complaints
         description: Complaints reporting a crash.
       - name: fire_complaints

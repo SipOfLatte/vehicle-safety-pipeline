@@ -91,12 +91,12 @@ These rules change the name on 2.4% of complaint and recall rows. Component name
 
 ## Gold layer
 
-Gold holds the tables the app and the text-to-SQL assistant query. NHTSA publishes no sales figures, so everything here is a count of complaints, not a rate per vehicle sold.
+Gold holds the tables the app and the text-to-SQL assistant query. NHTSA publishes no sales figures, so complaint totals are counts, not rates per vehicle sold: a best-seller like the F-150 collects more complaints simply because more of them are on the road. There's no free per-model sales or registration dataset with a clear licence, so the tables lead with `severe_share` instead, the share of a vehicle's own complaints that report a crash, fire, injury or death, which doesn't depend on sales volume. Ranked that way, the 2023 list starts with a BMW iX (38 complaints), and the Tesla Model 3 (428 complaints) comes seventh.
 
 | Model | What it answers | Rows (20 Oct 2026) |
 |---|---|---|
 | `fct_complaints_monthly` | Complaints per month, vehicle and component group, with crash, fire, injury and death counts | 1,387,542 |
-| `vehicle_risk_summary` | Per make, model family and model year: complaints, share that report a crash, fire, injury or death, recall campaigns | 31,992 |
+| `vehicle_complaint_summary` | Per make, model family and model year: share of complaints that report a crash, fire, injury or death, complaint count with its percentile among the same model year, recall campaigns | 31,992 |
 | `recall_coverage` | Complaints and recalls side by side per vehicle and component group, to find complaint clusters with no matching recall | 198,244 |
 | `component_trends` | Monthly complaints per vehicle and component group against the average of the three months before, with a flag for sharp rises | 90,632 |
 | `rag_documents` | Text for the chatbot: 427,782 complaints received since 2020 and 13,689 vehicle recalls since 2010 | 441,471 |

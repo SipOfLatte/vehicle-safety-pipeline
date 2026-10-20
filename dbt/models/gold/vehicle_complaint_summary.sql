@@ -1,7 +1,9 @@
 {#
   One row per make, model family and model year: complaint volume, how many complaints were
-  severe, and recall campaigns. NHTSA's data has no sales figures, so these are counts, not
-  rates per vehicle sold.
+  severe, and recall campaigns. NHTSA publishes no sales figures, so complaint totals are
+  counts, not rates per vehicle sold, and best-selling models rank high on volume alone.
+  severe_share (the share of a vehicle's own complaints that report a crash, fire, injury or
+  death) doesn't depend on how many were sold, so it leads the table.
 #}
 
 with vehicle_complaints as (
@@ -64,9 +66,11 @@ select
     cs.make,
     cs.model_family,
     cs.model_year,
-    cs.complaints,
-    cs.severe_complaints,
     round(cs.severe_complaints / cs.complaints, 4) as severe_share,
+    cs.complaints,
+    round(percent_rank() over (partition by cs.model_year order by cs.complaints), 4)
+        as complaints_percentile_in_model_year,
+    cs.severe_complaints,
     cs.crash_complaints,
     cs.fire_complaints,
     cs.injured,
