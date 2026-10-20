@@ -30,6 +30,8 @@ from ai.text_to_sql.executor import ask_connection, run_query
 from ai.text_to_sql.schema import schema_context
 
 HERE = Path(__file__).parent
+# How an answer says the tables can't answer the question.
+DECLINES = r"can't|cannot|can not|unable to|don't (have|include|contain|cover)|do not (have|include|contain|cover)|doesn't (have|include)|no (sales|price|pricing|ownership)"
 REPO = HERE.parents[1]
 
 
@@ -128,8 +130,8 @@ def main() -> None:
                 "steps": [f"{s.tool}: {s.summary}" for s in out.steps],
                 "model_calls": len(usage), "cost_usd": round(sum(usage), 5), "seconds": seconds,
             }
-            if "answer_pattern" in q:
-                row["passed"] = bool(re.search(q["answer_pattern"], out.answer, re.IGNORECASE))
+            if q.get("answerable") is False:
+                row["passed"] = out.result is None and bool(re.search(DECLINES, out.answer, re.IGNORECASE))
             else:
                 references = [run_query(conn, sql) for sql in [q["sql"], *q.get("alternatives", [])]]
                 row["expected_rows"] = len(references[0].rows)

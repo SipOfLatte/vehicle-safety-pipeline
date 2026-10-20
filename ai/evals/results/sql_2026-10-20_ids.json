@@ -1,0 +1,124 @@
+{
+  "summary": {
+    "dev": {
+      "questions": 4,
+      "passed": 4,
+      "execution_accuracy": 1.0,
+      "reviewed": 4,
+      "cost_usd": 0.0507,
+      "avg_model_calls": 1.5,
+      "stops": {
+        "end_turn": 4
+      }
+    },
+    "holdout": {
+      "questions": 2,
+      "passed": 2,
+      "execution_accuracy": 1.0,
+      "reviewed": 2,
+      "cost_usd": 0.0254,
+      "avg_model_calls": 1.5,
+      "stops": {
+        "end_turn": 2
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "s05",
+      "set": "dev",
+      "question": "Which vehicles have had 5 or more do-not-drive recalls? Give the make, model and model year.",
+      "reviewed": true,
+      "answer": "Five vehicles have had 5 or more do-not-drive recalls. Each has exactly 5, and all are BMWs:\n\n- 2002 M3\n- 2007 X5\n- 2008 X5\n- 2009 X5\n- 2009 X6\n\nThe X5 and X6 models also have many other recall campaigns. The 2009 X5 has 12 in total.",
+      "stop": "end_turn",
+      "sql": "select make, model_family as model, model_year, do_not_drive_recalls, recall_campaigns from vehicle_complaint_summary where do_not_drive_recalls >= 5 order by do_not_drive_recalls desc, make, model_family, model_year",
+      "steps": [
+        "run_sql: 5 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01408,
+      "seconds": 4.5,
+      "expected_rows": 5,
+      "passed": true,
+      "actual_rows": 5
+    },
+    {
+      "id": "s14",
+      "set": "dev",
+      "question": "In 2023, which make had the most service brake complaints where the owner reported a crash?",
+      "reviewed": true,
+      "answer": "In 2023, FORD had the most service brake complaints reporting a crash. It had 82 crash complaints, out of 1,083 service brake complaints for the make that year.\n\nThese are counts, not rates. Ford sells a lot of vehicles, so it will tend to have more complaints. The complaints are also unverified owner reports.",
+      "stop": "end_turn",
+      "sql": "select make, sum(crash_complaints) as crash_complaints, sum(complaints) as service_brake_complaints from fct_complaints_monthly where component_group='SERVICE BRAKES' and year(month)=2023 group by make order by 2 desc limit 1",
+      "steps": [
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01375,
+      "seconds": 4.4,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s24",
+      "set": "dev",
+      "question": "Which car has the highest complaint rate per vehicle sold?",
+      "reviewed": true,
+      "answer": "I can't answer this one, because the data has no sales figures. NHTSA publishes complaint counts, not the number of vehicles sold, so a complaint rate per vehicle sold can't be calculated from these tables. Complaint totals also tend to be higher for best-selling models, since there are more of them on the road.\n\nI can rank vehicles by severe_share instead. That's the share of a vehicle's complaints that report a crash, fire, injury or death. It doesn't depend on sales volume. I would only include vehicles with at least 30 complaints. Complaints are unverified owner reports. Do you want me to run that?",
+      "stop": "end_turn",
+      "sql": null,
+      "steps": [],
+      "model_calls": 1,
+      "cost_usd": 0.012,
+      "seconds": 2.9,
+      "passed": true
+    },
+    {
+      "id": "s25",
+      "set": "dev",
+      "question": "What is the average price of a 2022 Toyota Camry?",
+      "reviewed": true,
+      "answer": "I can't answer that because the data has no prices. It covers NHTSA vehicle safety complaints and recalls only, with no sales or pricing figures.\n\nI can look up complaints, severity, or recalls for the 2022 Toyota Camry if you'd like.",
+      "stop": "end_turn",
+      "sql": null,
+      "steps": [],
+      "model_calls": 1,
+      "cost_usd": 0.01087,
+      "seconds": 2.2,
+      "passed": true
+    },
+    {
+      "id": "s30",
+      "set": "holdout",
+      "question": "In 2023, how many complaints in the electrical system component group reported a fire?",
+      "reviewed": true,
+      "answer": "In 2023, 405 complaints in the electrical system group reported a fire. That is out of 10,919 electrical system complaints received that year. I counted by the month NHTSA received each complaint, not by model year. These are unverified owner reports.",
+      "stop": "end_turn",
+      "sql": "SELECT SUM(fire_complaints) AS fire_complaints, SUM(complaints) AS electrical_complaints FROM fct_complaints_monthly WHERE component_group='ELECTRICAL SYSTEM' AND month >= '2023-01-01' AND month < '2024-01-01'",
+      "steps": [
+        "run_sql: 1 rows"
+      ],
+      "model_calls": 2,
+      "cost_usd": 0.01363,
+      "seconds": 4.8,
+      "expected_rows": 1,
+      "passed": true,
+      "actual_rows": 1
+    },
+    {
+      "id": "s39",
+      "set": "holdout",
+      "question": "Which vehicle has the most complaints per owner in Australia?",
+      "reviewed": true,
+      "answer": "I can't answer that with these tables. They only hold US NHTSA complaints and recalls, so they have nothing on Australia. They also have no sales or ownership figures, so I can't work out complaints per owner for any country.\n\nFor US vehicles, I can rank by severe_share, the share of complaints that report a crash, fire, injury or death. This is the fairest comparison available, and I would limit it to vehicles with at least 30 complaints. I can also show raw complaint counts, but those mostly reflect how many of each vehicle are on the road.",
+      "stop": "end_turn",
+      "sql": null,
+      "steps": [],
+      "model_calls": 1,
+      "cost_usd": 0.01176,
+      "seconds": 2.7,
+      "passed": true
+    }
+  ]
+}

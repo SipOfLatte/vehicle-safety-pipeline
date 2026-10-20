@@ -1,8 +1,8 @@
 # Vehicle safety pipeline
 
-A daily data pipeline on US vehicle safety data from NHTSA (the National Highway Traffic Safety Administration). Owner complaints and recall notices land in S3, load into Snowflake, and dbt models them through bronze, silver and gold layers. Two AI features will sit on the gold layer: a chatbot that answers questions from complaint and recall text and cites the records it used, and a text-to-SQL assistant over the gold tables.
+A daily data pipeline on US vehicle safety data from NHTSA (the National Highway Traffic Safety Administration). Owner complaints and recall notices land in S3, load into Snowflake, and dbt models them through bronze, silver and gold layers. Two AI features sit on the gold layer: a chatbot that answers questions from complaint and recall text and cites the records it used, and a text-to-SQL assistant over the gold tables.
 
-The project is being built over about six weeks. Weeks 1 to 4 are done: infrastructure, ingestion, the load into Snowflake, the dbt silver and gold layers, an Airflow DAG that runs it all daily (locally for now), and the RAG chatbot (running locally, not deployed yet). Everything below marked "planned" isn't built yet.
+The project is being built over about six weeks. Weeks 1 to 5 are done: infrastructure, ingestion, the load into Snowflake, the dbt silver and gold layers, an Airflow DAG that runs it all daily (locally for now), the RAG chatbot and the text-to-SQL assistant (both running locally, not deployed yet). Everything below marked "planned" isn't built yet.
 
 ## Architecture
 
@@ -42,8 +42,8 @@ Airflow, daily: check for new files → S3 → COPY → dbt build → embed new 
 | Transformation | dbt Core: silver and gold layers, incremental models for the large tables | Built |
 | Orchestration | Airflow 3 via Astronomer Cosmos, failure alerts by email through SNS | Built and running locally; EC2 Spot planned (week 6) |
 | Embeddings and retrieval | Snowflake Cortex embeddings (`snowflake-arctic-embed-l-v2.0`), hand-written cosine similarity search with metadata filters | Built |
-| LLM | Claude API: Claude Haiku 5.5 for the chatbot | Chatbot built; text-to-SQL planned (week 5) |
-| App | Streamlit: Chat page built and tested locally | Deploy to Streamlit Community Cloud planned (week 6) |
+| LLM | Claude API: Claude Haiku 5.5 for the chatbot, Claude Sonnet 5.5 for text-to-SQL | Built |
+| App | Streamlit: Chat and Ask pages built and tested locally | Deploy to Streamlit Community Cloud planned (week 6) |
 | CI | GitHub Actions | Planned (week 6) |
 
 ## The data
@@ -103,7 +103,7 @@ Gold holds the tables the app and the text-to-SQL assistant query. NHTSA publish
 
 Two examples of what they show. For 2018 Ford Escapes, 1,444 complaints are about the engine and no recall matches that model year and component group. In September 2026, Ford Edge engine complaints reached 98, against an average of 35 over the previous three months. A recall can still cover a problem under a different component group, so `recall_coverage` points at places to look rather than proving a gap.
 
-The descriptions in `dbt/models/gold/_gold.yml` are written for the text-to-SQL assistant, since they will be its only description of the tables.
+The descriptions in `dbt/models/gold/_gold.yml` are written for the text-to-SQL assistant, since they are its only description of the tables.
 
 ## RAG chatbot
 
@@ -115,7 +115,7 @@ A question goes through three steps:
 2. One SQL query applies the filters, then ranks documents by `VECTOR_COSINE_SIMILARITY` to the question's embedding. Without a document-type filter it keeps 3 complaints and 2 recalls, because complaints are written in the first person like questions are and otherwise crowd recalls out of the top 5.
 3. Claude Haiku answers from those 5 documents only and cites them by ID. The app links each ID to NHTSA's record and flags any citation that wasn't among the retrieved documents.
 
-The app limits each session to 10 questions and spends at most USD 0.50 a day on Claude, tracked in Snowflake. One question costs about USD 0.0006.
+The app limits each session to 10 questions and caps Claude spend per page each day, tracked in Snowflake: USD 0.20 for the chatbot and USD 0.30 for text-to-SQL, so one page can't use up the other's share. One chatbot question costs about USD 0.0006.
 
 ### Evaluation
 
@@ -132,6 +132,32 @@ The held-out set is the honest number. Its one miss was the electric Dodge Charg
 Every question was checked by hand before scoring. Five tuning questions were reworded because they copied the recall's wording or got a detail wrong. Eight now also accept a second recall that answers them equally well, often a re-recall of the same defect. Two complaint questions require a keyword, such as "phantom" for phantom braking, because their component group covers far more than the question asks about. Complaint clusters are still easier to hit than recalls, since hundreds of complaints count as correct. Across all 30 answers, no answer cited a document it wasn't given.
 
 Two things the evaluation changed. Component group was a filter at first, but the model's guess at NHTSA's categories was wrong twice in ten (backup cameras are filed under back-over prevention, axle shafts under power train) and shut out the right recall, so it's now only shown, not applied. And a first version embedded the question inside the search query; Snowflake inlined that call into the sort and ran it once per row, about 441,000 Cortex calls per unfiltered search. The question is now embedded once in its own query, and an unfiltered search takes about a second instead of fifty.
+
+## Text-to-SQL assistant
+
+The Ask page answers questions about numbers: how many complaints a vehicle has, which makes lead a component group, where complaint clusters have no recall. Claude Sonnet 5.5 sees only the four gold analytics tables, described from the dbt docs YAML, and works with two tools:
+
+- `find_values` looks up how a make, model or component group is stored, so "Silverado" becomes `SILVERADO 1500` before it goes into a filter.
+- `run_sql` runs a query and returns the first 30 rows. If Snowflake rejects the query, the error goes back to Claude, which fixes it and tries again.
+
+A question takes 2 or 3 Claude calls (at most 6), about 5 seconds and USD 0.015. The app shows the answer, the final SQL, the result table, and a chart when the result is a time series or a short ranking.
+
+### Keeping model-written SQL read-only
+
+Before a query runs, [`guard.py`](ai/text_to_sql/guard.py) parses it with sqlglot and rejects anything that isn't a single SELECT on the four tables, along with functions such as `RESULT_SCAN` and Cortex AI calls. The query then runs as `ASK_ROLE`, which can read those four tables and nothing else, with a 30-second timeout and a 1,000-row cap.
+
+Testing the role turned up two ways around it. Snowflake gives new users `DEFAULT_SECONDARY_ROLES = ('ALL')`, so a session running as `ASK_ROLE` also carried the app user's other role and could read and write the app's usage log. Snowflake also grants Cortex to the `PUBLIC` role, which every role inherits, so a SELECT could call paid AI functions. The app user now has no secondary roles, Cortex is granted only to the two roles that use it, and the guard blocks those calls as well.
+
+### Evaluation
+
+[`ai/evals/sql_questions.yaml`](ai/evals/sql_questions.yaml) has 40 questions, each with a reference query written and checked by hand. A question passes when Claude's final query returns the same rows as the reference, with both run at the same moment because the data changes daily. Column names and order don't matter, and numbers match within 1%. Three questions ask for things the tables don't hold (sales, prices, Australian data). They pass only if Claude runs no query and says it can't answer.
+
+| Set | Questions | Execution accuracy |
+|---|---|---|
+| Tuning | 25 | 24/25 |
+| Held out (run once after tuning) | 15 | 15/15 |
+
+The first tuning run scored 16/25. Most misses had the right answer in the text but returned more rows than the question asked for, because the prompt said to show a top 10 when no number was given. After that prompt change, a fix to the scorer and a reworded ambiguous question, one miss remains. Asked what owners complain about most on the 2018 Chevrolet Equinox, Claude names service brakes but returns a ranking of every component group instead of one row. The held-out questions are mostly direct lookups and rankings, so 15/15 is closer to an upper bound than a typical score. The review reworded one held-out question and tightened the pass rule for unanswerable ones, and those two held-out questions were re-run once.
 
 ## How ingestion works
 
@@ -158,12 +184,10 @@ ingestion/   Download and S3 upload, with unit tests
 snowflake/   Setup and bronze load SQL
 dbt/         dbt project: silver and gold models, seeds and tests
 airflow/     Astro project: the daily and weekly DAGs, DAG tests
-ai/          RAG retrieval and answers, eval questions and runner
+ai/          RAG retrieval and answers, text-to-SQL agent, eval questions and runners
 app/         Streamlit app
 docs/        Data profile and NHTSA field descriptions
 ```
-
-Text-to-SQL and the app's second page come in week 5.
 
 ## Running it
 
