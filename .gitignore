@@ -22,6 +22,7 @@ crash.log
 
 # Internal project brief, kept local
 PROJECT.md
+description.md
 
 # dbt
 dbt/target/
