@@ -2,7 +2,7 @@
 
 A daily data pipeline on US vehicle safety data from NHTSA (the National Highway Traffic Safety Administration). Owner complaints and recall notices land in S3, load into Snowflake, and dbt models them through bronze, silver and gold layers. Two AI features will sit on the gold layer: a chatbot that answers questions from complaint and recall text and cites the records it used, and a text-to-SQL assistant over the gold tables.
 
-The project is being built over about six weeks. Weeks 1 to 3 are done: infrastructure, ingestion, the load into Snowflake, the dbt silver and gold layers, and an Airflow DAG that runs it all daily (locally for now). Everything below marked "planned" isn't built yet.
+The project is being built over about six weeks. Weeks 1 to 4 are done: infrastructure, ingestion, the load into Snowflake, the dbt silver and gold layers, an Airflow DAG that runs it all daily (locally for now), and the RAG chatbot (running locally, not deployed yet). Everything below marked "planned" isn't built yet.
 
 ## Architecture
 
@@ -41,9 +41,9 @@ Airflow, daily: check for new files → S3 → COPY → dbt build → embed new 
 | Warehouse | Snowflake, two X-Small warehouses with resource monitors | Built |
 | Transformation | dbt Core: silver and gold layers, incremental models for the large tables | Built |
 | Orchestration | Airflow 3 via Astronomer Cosmos, failure alerts by email through SNS | Built and running locally; EC2 Spot planned (week 6) |
-| Embeddings and retrieval | Snowflake Cortex embeddings (Voyage AI as fallback), hand-written cosine similarity search with metadata filters | Planned (week 4) |
-| LLM | Claude API | Planned (weeks 4 and 5) |
-| App | Streamlit Community Cloud | Planned (weeks 4 and 5) |
+| Embeddings and retrieval | Snowflake Cortex embeddings (`snowflake-arctic-embed-l-v2.0`), hand-written cosine similarity search with metadata filters | Built |
+| LLM | Claude API: Claude Haiku 5.5 for the chatbot | Chatbot built; text-to-SQL planned (week 5) |
+| App | Streamlit: Chat page built and tested locally | Deploy to Streamlit Community Cloud planned (week 6) |
 | CI | GitHub Actions | Planned (week 6) |
 
 ## The data
@@ -105,6 +105,32 @@ Two examples of what they show. For 2018 Ford Escapes, 1,444 complaints are abou
 
 The descriptions in `dbt/models/gold/_gold.yml` are written for the text-to-SQL assistant, since they will be its only description of the tables.
 
+## RAG chatbot
+
+The chatbot answers questions about specific vehicles from 441,471 documents: owner complaints received since 2020 and vehicle recalls since 2010. Each document is embedded with Snowflake Cortex (`snowflake-arctic-embed-l-v2.0`, 1,024 dimensions) by an incremental dbt model, so the daily run only embeds new or changed documents. The one-time backfill took 72 seconds on an X-Small warehouse and about 70 million tokens.
+
+A question goes through three steps:
+
+1. Claude Haiku 5.5 turns it into filters (make, model, model year, complaint or recall) as structured output. Each value is checked against names that exist in the data; an unknown name is dropped and shown to the user rather than silently filtering out every document.
+2. One SQL query applies the filters, then ranks documents by `VECTOR_COSINE_SIMILARITY` to the question's embedding. Without a document-type filter it keeps 3 complaints and 2 recalls, because complaints are written in the first person like questions are and otherwise crowd recalls out of the top 5.
+3. Claude Haiku answers from those 5 documents only and cites them by ID. The app links each ID to NHTSA's record and flags any citation that wasn't among the retrieved documents.
+
+The app limits each session to 10 questions and spends at most USD 0.50 a day on Claude, tracked in Snowflake. One question costs about USD 0.0006.
+
+### Evaluation
+
+[`ai/evals/rag_questions.yaml`](ai/evals/rag_questions.yaml) has 30 questions with a known right answer, scored on whether it appears in the top 5:
+
+| Set | Questions | Hit rate at 5 |
+|---|---|---|
+| Specific recalls (used while tuning retrieval) | 10 | 10/10 |
+| Complaint clusters (one vehicle, year and component) | 10 | 10/10 |
+| Held-out recalls (written after tuning, run once) | 10 | 9/10 |
+
+The held-out set is the honest number. The miss was the electric Dodge Charger: the model filter matched `CHARGER`, while NHTSA files the electric car as `CHARGER EV`, so the right recall was filtered out. The model-family rule groups `HYBRID` variants but not `EV` ones yet. Complaint clusters are easier to hit because hundreds of complaints count as correct. Across all 30 answers, no answer cited a document it wasn't given.
+
+Two things the evaluation changed. Component group was a filter at first, but the model's guess at NHTSA's categories was wrong twice in ten (backup cameras are filed under back-over prevention, axle shafts under power train) and shut out the right recall, so it's now only shown, not applied. And a first version embedded the question inside the search query; Snowflake inlined that call into the sort and ran it once per row, about 441,000 Cortex calls per unfiltered search. The question is now embedded once in its own query, and an unfiltered search takes about a second instead of fifty.
+
 ## How ingestion works
 
 [`ingestion/nhtsa_ingest.py`](ingestion/nhtsa_ingest.py) sends a HEAD request for each file first. NHTSA's `ETag` header is the zip's MD5, so an unchanged ETag means the file can be skipped. When a file has changed, the script downloads it, checks the MD5, and re-compresses the text inside as gzip, because Snowflake's `COPY` can't read zip files. It uploads the result to `s3://<bucket>/bronze/<dataset>/load_date=YYYY-MM-DD/` and writes a small manifest. If the lifecycle rule has deleted the last copy, the script uploads the file again even if the ETag hasn't changed.
@@ -130,10 +156,12 @@ ingestion/   Download and S3 upload, with unit tests
 snowflake/   Setup and bronze load SQL
 dbt/         dbt project: silver and gold models, seeds and tests
 airflow/     Astro project: the daily and weekly DAGs, DAG tests
+ai/          RAG retrieval and answers, eval questions and runner
+app/         Streamlit app
 docs/        Data profile and NHTSA field descriptions
 ```
 
-The AI code and the app will be added in later weeks.
+Text-to-SQL and the app's second page come in week 5.
 
 ## Running it
 

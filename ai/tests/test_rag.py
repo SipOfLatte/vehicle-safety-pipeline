@@ -31,10 +31,11 @@ def test_search_sql_binds_every_filter_value():
     sql, params = search_sql(Filters(make="TESLA", model_family="MODEL Y", year_from=2022, year_to=2023,
                                      component_group="SERVICE BRAKES", doc_type="recall"))
     assert params == {"make": "TESLA", "model_family": "MODEL Y", "year_from": 2022, "year_to": 2023,
-                      "component_group": "SERVICE BRAKES", "doc_type": "recall"}
+                      "doc_type": "recall"}  # component_group is deliberately not a filter
     for value in params.values():
         assert str(value) not in sql  # values are bound, never pasted into the SQL
     assert "vector_cosine_similarity" in sql and "where" in sql
+    assert "embed_text" not in sql  # embedding happens once, outside the search query
 
 
 def test_search_sql_without_filters_has_no_where():
@@ -44,7 +45,8 @@ def test_search_sql_without_filters_has_no_where():
 
 def test_filter_schema_limits_component_groups_to_known_values():
     schema = filter_schema(["AIR BAGS", "SERVICE BRAKES"])
-    assert schema["properties"]["component_group"]["enum"] == ["AIR BAGS", "SERVICE BRAKES", None]
+    assert schema["properties"]["component_group"]["anyOf"] == [
+        {"type": "string", "enum": ["AIR BAGS", "SERVICE BRAKES"]}, {"type": "null"}]
     assert schema["additionalProperties"] is False
 
 
@@ -59,3 +61,8 @@ def test_cited_ids_separates_real_from_invented_citations():
     docs = [doc("complaint:1"), doc("recall:26V671000", doc_type="recall")]
     real, invented = cited_ids("Owners reported it [complaint:1]. Recalled [recall:26V671000] [recall:99V000000].", docs)
     assert real == ["complaint:1", "recall:26V671000"] and invented == ["recall:99V000000"]
+
+
+def test_mixed_search_reserves_slots_for_recalls_only_without_doc_type_filter():
+    assert "partition by doc_type" in search_sql(Filters())[0]
+    assert "partition by doc_type" not in search_sql(Filters(doc_type="complaint"))[0]

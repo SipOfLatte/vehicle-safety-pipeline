@@ -52,9 +52,9 @@ for msg in st.session_state.get("history", []):
         st.markdown(msg["content"])
 
 examples = [
-    "Are there recalls for seat belts on the 2023 Tesla Model Y?",
+    "Are there airbag recalls on the 2020 Honda CR-V?",
     "What do owners report about engine problems on the 2018 Ford Escape?",
-    "Have any airbag recalls told owners not to drive their car?",
+    "Can the suspension break on a 2021 Tesla Model Y?",
 ]
 st.caption("Try: " + " · ".join(f"*{e}*" for e in examples))
 

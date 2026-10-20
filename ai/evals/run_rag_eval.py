@@ -25,7 +25,7 @@ K = 5
 
 
 def is_hit(kind: str, relevant, doc) -> bool:
-    if kind == "recall":
+    if kind in ("recall", "holdout"):
         return doc.doc_id == relevant
     return (
         doc.doc_type == "complaint"
@@ -48,8 +48,8 @@ def main() -> None:
     results = []
     with connect() as conn:
         vocab, groups = load_vocabulary(conn)
-        for kind in ("recall", "complaint"):
-            for q in questions[kind]:
+        for kind in ("recall", "complaint", "holdout"):
+            for q in questions.get(kind, []):
                 filters = validate_filters(extract_filters(client, q["question"], groups), vocab)
                 filtered = search(conn, q["question"], filters, k=K)
                 unfiltered = search(conn, q["question"], Filters(), k=K)
@@ -69,8 +69,10 @@ def main() -> None:
                 print(f"{q['id']} hit={row['hit']!s:5} no_filter_hit={row['hit_without_filters']!s:5} {row['filters']}")
 
     summary = {}
-    for kind in ("recall", "complaint"):
+    for kind in ("recall", "complaint", "holdout"):
         rows = [r for r in results if r["kind"] == kind]
+        if not rows:
+            continue
         summary[kind] = {
             "questions": len(rows),
             "hit_rate_at_5": sum(r["hit"] for r in rows) / len(rows),

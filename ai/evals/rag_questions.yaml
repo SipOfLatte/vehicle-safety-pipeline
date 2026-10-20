@@ -91,3 +91,47 @@ complaint:
     question: "Do Fisker Ocean owners report brake problems?"
     relevant: {make: FISKER, model_family: OCEAN, model_year: 2023, component_group: SERVICE BRAKES}
     reviewed: false
+
+# Held-out recall questions: written on 20 Oct 2026 after retrieval was tuned on the 20 above,
+# and run once without further changes. This is the score to report for recall retrieval.
+holdout:
+  - id: h01
+    question: "My Corvette's front trunk lid popped open while I was driving. Is that a known issue?"
+    relevant: recall:20V489000
+    reviewed: false
+  - id: h02
+    question: "Does the electric Dodge Charger have a problem with the pedestrian warning sound?"
+    relevant: recall:25V389000
+    reviewed: false
+  - id: h03
+    question: "On my Ford Maverick the turn signal doesn't blink faster when a rear bulb is out. Recall?"
+    relevant: recall:23V848000
+    reviewed: false
+  - id: h04
+    question: "Could the passenger airbag deploy too hard on a 2025 GMC Canyon AT4X?"
+    relevant: recall:25V856000
+    reviewed: false
+  - id: h05
+    question: "Is the middle rear seat belt safe in a 2025 Hyundai Kona?"
+    relevant: recall:26V452000
+    reviewed: false
+  - id: h06
+    question: "My 2017 Mazda3 wipers just stopped working in the rain. Anything on that?"
+    relevant: recall:19V272000
+    reviewed: false
+  - id: h07
+    question: "Are there engine oil problems with the turbo engine in newer Nissan Rogues?"
+    relevant: recall:26V080000
+    reviewed: false
+  - id: h08
+    question: "Can the suspension break on a 2021 Tesla Model Y?"
+    relevant: recall:21V912000
+    reviewed: false
+  - id: h09
+    question: "Why would a 2020 Toyota Yaris stall? I heard something about the fuel pump."
+    relevant: recall:21V617000
+    reviewed: false
+  - id: h10
+    question: "Is there anything wrong with the front strut mounts on a 2023 VW GTI?"
+    relevant: recall:23V437000
+    reviewed: false

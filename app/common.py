@@ -43,7 +43,8 @@ def claude():
 @st.cache_data(ttl=3600)
 def data_as_of() -> str:
     cur = snowflake().cursor()
-    cur.execute("select max(loaded_at)::date from VEHICLE_SAFETY.BRONZE.LOAD_LOG")
+    # Snowflake's session time zone defaults to US Pacific; show the load date in UTC.
+    cur.execute("select convert_timezone('UTC', max(loaded_at))::date from VEHICLE_SAFETY.BRONZE.LOAD_LOG")
     return str(cur.fetchone()[0])
 
 

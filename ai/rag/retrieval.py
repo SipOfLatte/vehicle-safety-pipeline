@@ -52,8 +52,8 @@ def filter_schema(component_groups: list[str]) -> dict:
             "model_family": nullable_str,
             "year_from": nullable_int,
             "year_to": nullable_int,
-            "component_group": {"type": ["string", "null"], "enum": [*component_groups, None]},
-            "doc_type": {"type": ["string", "null"], "enum": ["complaint", "recall", None]},
+            "component_group": {"anyOf": [{"type": "string", "enum": component_groups}, {"type": "null"}]},
+            "doc_type": {"anyOf": [{"type": "string", "enum": ["complaint", "recall"]}, {"type": "null"}]},
         },
         "required": ["make", "model_family", "year_from", "year_to", "component_group", "doc_type"],
         "additionalProperties": False,
@@ -129,25 +129,43 @@ def search_sql(f: Filters) -> tuple[str, dict]:
     if f.year_from and f.year_to:
         where.append("arrays_overlap(model_years, array_generate_range(%(year_from)s, %(year_to)s + 1))")
         params["year_from"], params["year_to"] = f.year_from, f.year_to
-    if f.component_group:
-        where.append("array_contains(%(component_group)s::variant, component_groups)")
-        params["component_group"] = f.component_group
+    # component_group is shown to the user but not used as a filter: it's the model's guess at
+    # NHTSA's taxonomy (backup cameras sit under back-over prevention, axle shafts under power train),
+    # and a wrong guess excluded the right recall in 2 of 10 eval questions. The vector search
+    # handles the topic; filters stay on facts stated in the question.
     if f.doc_type:
         where.append("doc_type = %(doc_type)s")
         params["doc_type"] = f.doc_type
+    # The question vector arrives as a bound constant. Embedding it inside this query (even in a CTE)
+    # let Snowflake inline the Cortex call into the sort, running it once per row: about 441k calls
+    # per unfiltered search. embed_question() runs it exactly once instead.
     sql = f"""
-        with q as (
-            select snowflake.cortex.embed_text_1024('{EMBEDDING_MODEL}', %(question)s) as v
-        )
         select doc_id, doc_type, source_id, doc_date, makes, model_families, model_years,
                component_groups, is_severe, text,
-               vector_cosine_similarity(embedding, q.v) as score
-        from {TABLE}, q
+               vector_cosine_similarity(embedding, parse_json(%(question_vector)s)::array::vector(float, 1024)) as score
+        from {TABLE}
         {"where " + " and ".join(where) if where else ""}
+        {"" if f.doc_type else RESERVED_SLOTS}
         order by score desc
         limit %(k)s
     """
     return sql, params
+
+
+# Owner complaints are written in the first person, like users' questions, so they out-score
+# recall notices on similarity even when a recall is the better answer. Without a doc_type
+# filter, keep at most 3 complaints so the 2 best recalls always make the top 5.
+RESERVED_SLOTS = "qualify row_number() over (partition by doc_type order by score desc) <= iff(doc_type = 'recall', 2, 3)"
+
+
+def embed_question(conn, question: str) -> str:
+    """One Cortex call: the question's embedding as JSON text, ready to bind into search_sql."""
+    cur = conn.cursor()
+    cur.execute(
+        f"select to_json(snowflake.cortex.embed_text_1024('{EMBEDDING_MODEL}', %(q)s)::array)",
+        {"q": QUERY_PREFIX + question},
+    )
+    return cur.fetchone()[0]
 
 
 @dataclass
@@ -177,7 +195,7 @@ class Doc:
 def search(conn, question: str, f: Filters, k: int = 5) -> list[Doc]:
     sql, params = search_sql(f)
     cur = conn.cursor()
-    cur.execute(sql, params | {"question": QUERY_PREFIX + question, "k": k})
+    cur.execute(sql, params | {"question_vector": embed_question(conn, question), "k": k})
     docs = []
     for row in cur.fetchall():
         row = list(row)

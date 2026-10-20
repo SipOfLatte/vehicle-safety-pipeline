@@ -21,8 +21,8 @@ models:
 
 vars:
   # Cortex embeddings need a Snowflake account with a payment method (trial accounts are blocked).
-  # Turn on with --vars '{enable_embeddings: true}' or by changing this default.
-  enable_embeddings: false
+  # Turned on 20 Oct 2026 after the account got a payment method and the backfill ran.
+  enable_embeddings: true
   embedding_model: snowflake-arctic-embed-l-v2.0
 
 seeds:

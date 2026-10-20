@@ -29,3 +29,8 @@ dbt/dbt_packages/
 dbt/logs/
 dbt/.user.yml
 airflow/.astro/config.yaml.lock
+
+# macOS and local tooling
+.DS_Store
+.playwright-mcp/
+.streamlit/

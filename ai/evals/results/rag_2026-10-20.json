@@ -1,0 +1,1230 @@
+{
+  "summary": {
+    "recall": {
+      "questions": 10,
+      "hit_rate_at_5": 1.0,
+      "hit_rate_at_5_without_filters": 1.0,
+      "reviewed": 0
+    },
+    "complaint": {
+      "questions": 10,
+      "hit_rate_at_5": 1.0,
+      "hit_rate_at_5_without_filters": 1.0,
+      "reviewed": 0
+    },
+    "holdout": {
+      "questions": 10,
+      "hit_rate_at_5": 0.9,
+      "hit_rate_at_5_without_filters": 1.0,
+      "reviewed": 0
+    },
+    "answers_with_invented_citations": 0,
+    "answers_without_citations": 0
+  },
+  "results": [
+    {
+      "id": "r01",
+      "kind": "recall",
+      "question": "Is there a recall about the roof cargo rails on 2020 BMW X3s coming loose in a crash?",
+      "reviewed": false,
+      "filters": "BMW, X3, 2020, STRUCTURE, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:24V534000",
+          "score": 0.7174
+        },
+        {
+          "doc_id": "recall:24V764000",
+          "score": 0.704
+        },
+        {
+          "doc_id": "recall:20V152000",
+          "score": 0.6086
+        },
+        {
+          "doc_id": "recall:19V738000",
+          "score": 0.6008
+        },
+        {
+          "doc_id": "recall:23V211000",
+          "score": 0.5962
+        }
+      ],
+      "answer": "The documents don't show a recall for **roof** cargo rails. They do show two recalls for the **interior rear cargo rail** on 2020 BMW X3s, which may be what you're thinking of.\n\n- **recall:24V534000** covers 2018\u20132023 X3 sDrive30i, xDrive30i, M40i, and M vehicles, including 2020 model years. The attachment for the interior cargo rail may be damaged in a rear crash, causing the rail to detach, which can increase the risk of injury. Dealers will replace the rear cargo rail attachment bolts free of charge. [recall:24V534000]\n- **recall:24V764000** covers 2018\u20132022 X3 vehicles, which includes 2020. It describes the same rear cargo rail detachment problem in a rear crash. Vehicles previously repaired under 24V-534 must have the new repair completed. [recall:24V764000]\n\nIf you're asking about roof rails specifically, these documents don't address that. You could check NHTSA's recall database directly for the vehicle's VIN.",
+      "cited": [
+        "recall:24V534000",
+        "recall:24V764000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r02",
+      "kind": "recall",
+      "question": "My 2021 Chevy Bolt already had the battery recall done. Is there another recall about the diagnostic software?",
+      "reviewed": false,
+      "filters": "CHEVROLET, 2021, recalls only",
+      "dropped_filters": [
+        "model BOLT"
+      ],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:24V481000",
+          "score": 0.6756
+        },
+        {
+          "doc_id": "recall:24V812000",
+          "score": 0.6564
+        },
+        {
+          "doc_id": "recall:21V650000",
+          "score": 0.619
+        },
+        {
+          "doc_id": "recall:20V811000",
+          "score": 0.5573
+        },
+        {
+          "doc_id": "recall:20V588000",
+          "score": 0.5536
+        }
+      ],
+      "answer": "Yes. Two later recalls concern the advanced diagnostic software on Bolts that were already repaired under the battery recall 21V-650:\n\n- **24V-812** (dated 2024-10-31): The software installation on vehicles previously repaired under 21V-650 may have failed, so the high-voltage battery could catch fire when charged to full or nearly full capacity [recall:24V812000]. Dealers will reinstall the software free of charge, and owner letters were mailed December 3, 2024 [recall:24V812000]. GM's number is N242470160 [recall:24V812000].\n- **24V-481** (dated 2024-06-27): The advanced diagnostic software may have been incorrectly installed and may fail to detect defective battery modules, possibly causing a battery fire [recall:24V481000]. It covers 2020-2022 Bolt EVs previously remedied under 21V-650 [recall:24V481000]. Dealers will reinstall the software free of charge, and GM's numbers are N242443000 and N242443002 [recall:24V481000].\n\nBoth recalls list 2020-2022 model years [recall:24V481000][recall:24V812000], so a 2021 Bolt falls within their scope. Until the software is reinstalled, both recalls advise setting Target Charge Level to 90%, charging more often, avoiding depletion to 70 miles of range remaining, parking outside after charging, and not charging indoors overnight [recall:24V481000][recall:24V812000]. Owners can call the Bolt EV Concierge Team at 1-833-382-4389 [recall:24V481000][recall:24V812000].\n\nThe documents don't say whether every 21V-650 repair is affected, so confirm with a dealer or GM using your VIN.",
+      "cited": [
+        "recall:24V812000",
+        "recall:24V481000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r03",
+      "kind": "recall",
+      "question": "Have there been steering recalls on the Ford Transit Trail because of corrosion?",
+      "reviewed": false,
+      "filters": "FORD, STEERING, recalls only",
+      "dropped_filters": [
+        "model TRANSIT TRAIL"
+      ],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:24V542000",
+          "score": 0.6723
+        },
+        {
+          "doc_id": "recall:24V591000",
+          "score": 0.6351
+        },
+        {
+          "doc_id": "recall:24V226000",
+          "score": 0.5877
+        },
+        {
+          "doc_id": "recall:18V275000",
+          "score": 0.5657
+        },
+        {
+          "doc_id": "recall:17V668000",
+          "score": 0.564
+        }
+      ],
+      "answer": "Yes. One steering recall covers corrosion on the Transit Trail:\n\n- Recall 24V542000 (July 2024) covers certain 2023-2024 Transit vehicles with the Transit Trail package. The electronic power assist steering (EPAS) ground eyelet joint may corrode, which can cause a loss of power steering assist. Ford says this can increase the risk of a crash. The remedy is a new EPAS ground pigtail kit, installed by dealers free of charge. [recall:24V542000]\n\nOther documents in the sample don't fit this question. Recall 24V591000 is a steering recall, but it involves an incorrect bolt rather than corrosion [recall:24V591000]. Recall 24V226000 involves Transit Trail tires, not steering [recall:24V226000].",
+      "cited": [
+        "recall:24V542000",
+        "recall:24V591000",
+        "recall:24V226000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r04",
+      "kind": "recall",
+      "question": "Can the side airbags on a 2019 Honda Odyssey go off on their own?",
+      "reviewed": false,
+      "filters": "HONDA, ODYSSEY, 2019, AIR BAGS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "complaint:11681984",
+          "score": 0.6856
+        },
+        {
+          "doc_id": "complaint:11522625",
+          "score": 0.6745
+        },
+        {
+          "doc_id": "complaint:11630898",
+          "score": 0.6688
+        },
+        {
+          "doc_id": "recall:26V227000",
+          "score": 0.5624
+        },
+        {
+          "doc_id": "recall:18V664000",
+          "score": 0.5192
+        }
+      ],
+      "answer": "Yes, based on these documents, that has been reported, and Honda has recalled certain Odysseys for it.\n\n- **Recall:** Honda is recalling certain 2018\u20132022 Odysseys, including the 2019 model year, because a software programming error can cause the side and side curtain airbags to deploy unexpectedly. The remedy is free reprogramming of the SRS ECU software or replacement of the ECU if needed [recall:26V227000]. The recall notice says the risk is increased injury from unexpected deployment [recall:26V227000]. Note that this notice describes the 2018\u20132022 range, so I can't confirm from these documents whether a specific 2019 vehicle is affected; owners can check their VIN on NHTSA.gov once VINs become searchable [recall:26V227000].\n\n- **Owner complaints:** Several 2019 Odyssey owners reported airbags deploying without a crash or impact:\n  - An owner reported a driver-side curtain airbag deploying while slowing to a stop at about 30 mph, with no collision, and said a dealer-level inspection found no sign of collision [complaint:11681984].\n  - An owner reported the passenger-side airbags deploying while his father-in-law was refueling, with no warning lights [complaint:11522625].\n  - An owner reported the front driver-side airbag deploying at 50\u201360 mph with no impact and no warning light [complaint:11630898].\n\nThese are unverified owner reports, not established findings. The documents don't show how many vehicles are affected, and they are a small sample, so they can't tell you how common this is.",
+      "cited": [
+        "recall:26V227000",
+        "complaint:11681984",
+        "complaint:11522625",
+        "complaint:11630898"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r05",
+      "kind": "recall",
+      "question": "Is there a problem with the second row power seats on the 2026 Hyundai Ioniq 9 not detecting people?",
+      "reviewed": false,
+      "filters": "HYUNDAI, IONIQ 9, 2026, SEATS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:26V588000",
+          "score": 0.7273
+        },
+        {
+          "doc_id": "complaint:11725010",
+          "score": 0.7001
+        },
+        {
+          "doc_id": "complaint:11741650",
+          "score": 0.5607
+        },
+        {
+          "doc_id": "complaint:11766164",
+          "score": 0.5549
+        },
+        {
+          "doc_id": "recall:26V314000",
+          "score": 0.5446
+        }
+      ],
+      "answer": "Yes, there is a documented issue, and NHTSA has a recall for it.\n\n- **Recall:** Hyundai is recalling certain 2026 Ioniq 9 vehicles with the Limited, Calligraphy, or Calligraphy Design trim. The second-row power seats may fail to detect a person, so they can keep moving after contacting someone during powered functions such as automatic power fold-and-stow. A child may become trapped, increasing injury risk. [recall:26V588000]\n- **Interim advice:** Owners are told to use caution with second-row power seat functions until repaired, and to keep children out of the rear seats or near the rear seating area during power-folding. [recall:26V588000]\n- **Remedy:** The seat software will be inspected and updated over-the-air or by a dealer, free of charge. Owner letters are expected October 1, 2026. [recall:26V588000]\n\nOwner complaints also describe related incidents, though these are unverified:\n- One owner reported that the second-row seat folded, the button meant to prevent unsafe operation was missing, and their head became lodged between the seat and the vehicle structure, causing reported head injuries. The vehicle had not been diagnosed or repaired at the time of the report. [complaint:11725010]",
+      "cited": [
+        "recall:26V588000",
+        "complaint:11725010"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r06",
+      "kind": "recall",
+      "question": "Could the front side airbags fail to deploy on a 2023 Jeep Grand Cherokee because of a loose connector?",
+      "reviewed": false,
+      "filters": "JEEP, GRAND CHEROKEE, 2023, AIR BAGS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:24V897000",
+          "score": 0.6886
+        },
+        {
+          "doc_id": "complaint:11581773",
+          "score": 0.6537
+        },
+        {
+          "doc_id": "recall:26V328000",
+          "score": 0.6387
+        },
+        {
+          "doc_id": "complaint:11760893",
+          "score": 0.6199
+        },
+        {
+          "doc_id": "complaint:11660446",
+          "score": 0.6014
+        }
+      ],
+      "answer": "Yes, a loose connector has been identified as a cause, though the recall covers 2021\u20132024 models, not only 2023 vehicles by name, and it is a manufacturer finding.\n\n- Chrysler (FCA US) recalled certain 2022\u20132024 Jeep Grand Cherokee and 2021\u20132024 Grand Cherokee L vehicles because an improperly secured connector for the front seat side air bags may prevent them from deploying. The recall says these vehicles fail to comply with FMVSS 214 [recall:24V897000]. The 2023 model year falls within the recalled range. The remedy was dealers securing the connector at no charge, and the recall states all affected vehicles have been remedied [recall:24V897000].\n\n- A separate April 2024 complaint describes a 2023 Grand Cherokee in a crash where the owner reported the side impact and driver's side air bags did not deploy. The owner did not contact a dealer or the manufacturer, and the vehicle was not diagnosed, so the cause is unknown [complaint:11581773]. The owner linked the failure to a different recall, 24V199000, but the documents do not include that recall, so they do not confirm the cause in that case.\n\n- A later recall, 26V328000, covers a different issue: a software error that may delay side air bag deployment on 2022\u20132026 Grand Cherokee and 2023\u20132025 Grand Cherokee L vehicles [recall:26V328000]. This is not a loose connector.\n\nSo the documents support a loose connector as a known cause for a 2023 Grand Cherokee's front side airbags failing to deploy, but they do not establish that it caused the complaint in [complaint:11581773].",
+      "cited": [
+        "recall:24V897000",
+        "complaint:11581773",
+        "recall:26V328000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r07",
+      "kind": "recall",
+      "question": "The backup camera on my 2019 Kia Sorento stops showing a picture after rain. Is that a known recall?",
+      "reviewed": false,
+      "filters": "KIA, SORENTO, 2019, VISIBILITY, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:23V639000",
+          "score": 0.7459
+        },
+        {
+          "doc_id": "recall:22V703000",
+          "score": 0.5099
+        },
+        {
+          "doc_id": "recall:23V652000",
+          "score": 0.4929
+        }
+      ],
+      "answer": "Yes, this matches a known recall. NHTSA recall 23V639000 covers certain 2019 Kia Sorento vehicles because water may leak into the rearview camera and stop the image from appearing on the display [recall:23V639000]. The recall says this can reduce the driver's rear view and increase the risk of a crash, and the vehicles fail to meet FMVSS 111 \"Rear Visibility\" [recall:23V639000].\n\nThe remedy is free. Dealers will inspect the camera and add waterproofing to the camera harness, or replace the camera if needed [recall:23V639000]. Kia's recall number is SC282. You can contact Kia customer service at 1-800-333-4542 [recall:23V639000].\n\nThe recall applies only to certain 2019 Sorentos, so I can't confirm from these records that your specific vehicle is included. Check your VIN with Kia or NHTSA's recall lookup. Until the repair is done, the recall notice doesn't give interim guidance, so I can't say whether it is safe to rely on the camera in the rain.",
+      "cited": [
+        "recall:23V639000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r08",
+      "kind": "recall",
+      "question": "Are there recalls for transmission fluid leaking from the dipstick tube on Ram 2500 trucks?",
+      "reviewed": false,
+      "filters": "RAM, 2500, POWER TRAIN, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:22V835000",
+          "score": 0.7543
+        },
+        {
+          "doc_id": "recall:20V043000",
+          "score": 0.7211
+        },
+        {
+          "doc_id": "recall:24V413000",
+          "score": 0.5994
+        },
+        {
+          "doc_id": "recall:19V498000",
+          "score": 0.5972
+        },
+        {
+          "doc_id": "recall:17V562000",
+          "score": 0.5643
+        }
+      ],
+      "answer": "Yes. Two recalls in the sample describe transmission fluid leaking from the dipstick tube on Ram 2500 trucks:\n\n- **Recall 22V835000 (November 2022):** Covers certain 2020\u20132023 Ram 2500 and 2020\u20132022 Ram 3500 vehicles. Pressure and heat inside the transmission may cause a fluid leak from the dipstick tube, which may contact an ignition source and increase the risk of fire. The remedy is free replacement of the transmission dipstick and transmission vent assembly. [recall:22V835000]\n\n- **Recall 20V043000 (January 2020):** Covers certain 2019\u20132020 Ram 2500 and 3500 Pickups with six-speed automatic (68RFE) transmissions. The same pressure-and-heat condition may cause a dipstick tube leak, which may contact the turbocharger or another ignition source and increase fire risk. The remedy is replacement of the transmission valve body separator plate and reprogramming of the powertrain control module. [recall:20V043000]\n\nThe sample doesn't say whether these recalls fully cover every affected vehicle, and it doesn't include any owner complaints on this issue.",
+      "cited": [
+        "recall:22V835000",
+        "recall:20V043000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r09",
+      "kind": "recall",
+      "question": "Is there a recall for the 2020 Subaru Outback transmission control software engaging the clutch too early?",
+      "reviewed": false,
+      "filters": "SUBARU, OUTBACK, 2020, POWER TRAIN, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:22V485000",
+          "score": 0.7019
+        },
+        {
+          "doc_id": "recall:21V955000",
+          "score": 0.6932
+        },
+        {
+          "doc_id": "recall:20V766000",
+          "score": 0.6358
+        },
+        {
+          "doc_id": "recall:24V227000",
+          "score": 0.5702
+        },
+        {
+          "doc_id": "recall:19V664000",
+          "score": 0.5617
+        }
+      ],
+      "answer": "Yes. Two recalls in the documents cover this defect, and both include 2020 Outback vehicles:\n\n- **recall:22V485000** (dated 2022-07-08) covers certain 2020-2021 Outback and Legacy vehicles. A programming error in the Transmission Control Unit (TCU) may let the clutch engage before the drive chain is completely clamped. The chain may then slip and break, causing loss of drive power and increasing crash risk. Dealers will reprogram the TCU, inspect TCU data for chain slip, and inspect the chain guide. If slippage or damage is found, the transmission will be replaced, free of charge. Subaru's number for this recall is WRK-22. [recall:22V485000]\n- **recall:21V955000** (dated 2021-12-09) covers certain 2019-2020 Ascent, 2020 Legacy, and 2020 Outback vehicles with the same defect, consequence, and remedy. [recall:21V955000] The 22V485000 recall states that it expands on 21V-955. [recall:22V485000]\n\nThe documents don't say whether a specific vehicle is included, so check its VIN with Subaru customer service at 1-844-373-6614 or through NHTSA. The documents also contain no owner complaints about this issue.",
+      "cited": [
+        "recall:22V485000",
+        "recall:21V955000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "r10",
+      "kind": "recall",
+      "question": "Can the rear axle shaft come out of the housing on a 2022 Toyota Tacoma?",
+      "reviewed": false,
+      "filters": "TOYOTA, TACOMA, 2022, SUSPENSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:24V152000",
+          "score": 0.6928
+        },
+        {
+          "doc_id": "complaint:11543539",
+          "score": 0.477
+        },
+        {
+          "doc_id": "complaint:11585485",
+          "score": 0.4752
+        },
+        {
+          "doc_id": "recall:22V520000",
+          "score": 0.4644
+        },
+        {
+          "doc_id": "complaint:11712539",
+          "score": 0.4479
+        }
+      ],
+      "answer": "Yes, according to a recall notice, though it applies to a specific set of vehicles.\n\n- Toyota recalled certain 2022-2023 Tacoma vehicles because the axle shaft sub-assembly may separate from the axle housing due to debris causing improperly secured fasteners [recall:24V152000].\n- The recall states that axle shaft separation can cause a loss of vehicle stability and brake performance, increasing the risk of a crash [recall:24V152000].\n- The remedy is for dealers to inspect the rear axle assembly, tighten the axle retaining nuts as necessary, and repair or replace damaged components, free of charge [recall:24V152000].\n\nThe documents don't say whether every 2022 Tacoma is affected, so an owner should check whether their vehicle falls within the recall. Owners can contact Toyota customer service at 1-800-331-4331 [recall:24V152000].",
+      "cited": [
+        "recall:24V152000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c01",
+      "kind": "complaint",
+      "question": "What engine problems do owners report on the 2017 Ford Escape?",
+      "reviewed": false,
+      "filters": "FORD, ESCAPE, 2017, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11764524",
+          "score": 0.7624
+        },
+        {
+          "doc_id": "complaint:11491263",
+          "score": 0.7128
+        },
+        {
+          "doc_id": "complaint:11654622",
+          "score": 0.7012
+        },
+        {
+          "doc_id": "complaint:11738580",
+          "score": 0.6867
+        },
+        {
+          "doc_id": "complaint:11634945",
+          "score": 0.6838
+        }
+      ],
+      "answer": "Owners of 2017 Ford Escapes in these documents report recurring engine failures tied to coolant intrusion and head gasket or engine block problems. These are unverified owner reports, and no recall notices appear in the sample.\n\n- **Blown head gasket:** One owner calls it a common problem on this model [complaint:11764524]. Another reports white exhaust smoke, a sweet chemical smell, and rapid coolant loss with no external leaks, and a diagnostic tool suggested a possible blown head gasket [complaint:11654622].\n- **Recurring after repair:** One owner says that after a new engine was installed, the same failure happened about a week later [complaint:11491263]. Another says the problem returned after Customer Satisfaction Program 19B37 was completed in 2020 [complaint:11654622].\n- **Engine block cracking and coolant leaks:** One owner describes the engine block cracking and coolant leaking into the engine, which required replacing the engine and other components [complaint:11634945]. That owner reports repair costs over $11,000 and says the vehicle was worth less than the repair [complaint:11634945].\n- **Complete engine failure:** One owner reports complete engine failure on a 1.5L engine caused by coolant intrusion, at 67,000 miles [complaint:11738580].\n\nOwners also raise safety concerns. One describes worry about overheating or sudden failure while driving with young children, and mentions risk of engine fire [complaint:11654622]. These documents don't include any NHTSA finding confirming these concerns.",
+      "cited": [
+        "complaint:11764524",
+        "complaint:11654622",
+        "complaint:11491263",
+        "complaint:11634945",
+        "complaint:11738580"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c02",
+      "kind": "complaint",
+      "question": "Do 2019 Jeep Cherokee owners complain about the transmission?",
+      "reviewed": false,
+      "filters": "JEEP, CHEROKEE, 2019, POWER TRAIN, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 4,
+      "top5": [
+        {
+          "doc_id": "complaint:11610905",
+          "score": 0.6765
+        },
+        {
+          "doc_id": "complaint:11476874",
+          "score": 0.6651
+        },
+        {
+          "doc_id": "complaint:11723071",
+          "score": 0.6612
+        },
+        {
+          "doc_id": "complaint:11664338",
+          "score": 0.6564
+        },
+        {
+          "doc_id": "complaint:11650212",
+          "score": 0.6491
+        }
+      ],
+      "answer": "Yes. Several owners in these documents describe transmission problems in 2019 Jeep Cherokees, though these are unverified owner reports, and the sample is small, so I can't say how common they are.\n\nReported symptoms include:\n- Harsh upshifts from 1-2 and 2-3 at about 33,000 miles, with the vehicle dying out and the check engine light coming on [complaint:11610905].\n- An abnormal sound while accelerating at 40 MPH, with failure persisting after the transmission control module was updated; failure was about 20,000 miles [complaint:11476874].\n- A sluggish transmission with delayed acceleration on a car with only 79 miles [complaint:11723071].\n- Hesitation when accelerating, with the transmission reportedly replaced twice and the failure continuing at about 38,000 miles [complaint:11664338].\n- A whining sound and unexpected downshifting, with a diagnosis of a failed PT gear 2 at about 25,000 miles [complaint:11650212].\n\nSome owners also referenced a recall for 2019 Cherokee transmissions. One cited NHTSA Campaign 18V-492, covering 2019 Cherokees with the 948TE 9-speed transmission, and said their VIN was not included [complaint:11610905]. Other owners said the recall did not cover their VIN [complaint:11723071][complaint:11650212]. The documents provided do not include the recall notice itself, so I can't confirm its scope from them.",
+      "cited": [
+        "complaint:11610905",
+        "complaint:11476874",
+        "complaint:11723071",
+        "complaint:11664338",
+        "complaint:11650212"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c03",
+      "kind": "complaint",
+      "question": "What steering issues have people had with the 2022 Honda Civic?",
+      "reviewed": false,
+      "filters": "HONDA, CIVIC, 2022, STEERING",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 3,
+      "top5": [
+        {
+          "doc_id": "complaint:11598039",
+          "score": 0.79
+        },
+        {
+          "doc_id": "complaint:11755669",
+          "score": 0.7841
+        },
+        {
+          "doc_id": "complaint:11507955",
+          "score": 0.7815
+        },
+        {
+          "doc_id": "recall:23V704000",
+          "score": 0.6661
+        },
+        {
+          "doc_id": "recall:24V744000",
+          "score": 0.5905
+        }
+      ],
+      "answer": "Owners of 2022 Honda Civics have reported several steering problems, all unverified:\n\n- **Sticking, jerking, and constant correction:** One owner reported that after about 10,000 miles the wheel sticks and jerks while driving straight, needing constant corrections. The problem is worse above 50 mph. An alignment helped for about 24 hours, but the issue returned [complaint:11598039].\n- **Notchy feedback and lane drift:** Another owner reported sticking and notchy feedback during mid-turns, most noticeable at 45 mph or faster. The wheel can stay locked in position and need extra correction, which the owner said could cause overcorrection and drifting out of the lane. The vehicle had about 6,000 miles when this began and about 13,000 at the time of the report. The owner took it to a dealer during routine maintenance [complaint:11507955].\n- **Intermittent sticky steering and knocking:** One owner reported intermittent stiffness around the steering wheel's center position, requiring extra force before it moves normally. They also heard knocking or tapping from the front when turning at low speeds. The owner was concerned about losing control in an emergency. The vehicle had not yet been diagnosed by a dealer, and the owner's belief that this is a defect is based on their own view of other owner reports [complaint:11755669].\n- **Knocking at full lock:** The second owner above also reported knocking or ticking from the steering rack at low speeds when turned to full lock [complaint:11507955].\n\nTwo recalls cover 2022 Civics with steering-related defects, though neither clearly matches the owner complaints above:\n\n- **Recall 23V704000** covers 2022\u20132024 Civics that received a replacement power steering rack. The rack may have been incorrectly assembled, allowing the tire to chafe against the suspension or tie rod end and possibly damage the tire. Dealers will inspect and replace the rack as needed [recall:23V704000].\n- **Recall 24V744000** covers 2022\u20132025 Civics and other models. The steering gearbox may have been manufactured incorrectly, causing excessive internal friction and difficulty steering. Dealers will replace the worm gear spring and adjust or add grease as needed [recall:24V744000].\n\nThe documents don't say whether the complaints' symptoms are caused by either recall defect. Owners who are unsure whether their vehicle is covered can contact Honda customer service at 1-888-234-2138, as listed in the recall notices.",
+      "cited": [
+        "complaint:11598039",
+        "complaint:11507955",
+        "complaint:11755669",
+        "recall:23V704000",
+        "recall:24V744000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c04",
+      "kind": "complaint",
+      "question": "Are there complaints about engine failure on the 2016 Kia Sorento?",
+      "reviewed": false,
+      "filters": "KIA, SORENTO, 2016, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 4,
+      "top5": [
+        {
+          "doc_id": "complaint:11574167",
+          "score": 0.7449
+        },
+        {
+          "doc_id": "complaint:11568186",
+          "score": 0.7219
+        },
+        {
+          "doc_id": "complaint:11508563",
+          "score": 0.7148
+        },
+        {
+          "doc_id": "complaint:11585242",
+          "score": 0.713
+        },
+        {
+          "doc_id": "complaint:11442301",
+          "score": 0.7129
+        }
+      ],
+      "answer": "Yes. The provided documents include several owner complaints about engine failure on the 2016 Kia Sorento. These are unverified owner reports, not established findings:\n\n- One owner reports the engine failed at 79,000 miles, citing a \"known defect\" and saying Kia declined to honor a recall because a Product Improvement prerequisite was not completed [complaint:11574167].\n- One owner reports excessive oil usage leading to engine failure while driving on the highway, and says dealers diagnosed the car three times without any fault codes [complaint:11568186].\n- One owner reports the engine failed on I-75 at 70 mph with no warning lights, and that the dealer found severe rod knocking [complaint:11585242]. That owner also says the dealer mentioned existing engine-failure recalls for the 4-cylinder, but none yet for 6-cylinder vehicles.\n- One owner reports complete engine failure under 82,000 miles with no warning, after a rattle when shifting gears, and says the dealer confirmed the failure [complaint:11442301].\n- Another owner describes needing a new engine and says a dealer reported Kia had discontinued engines for 2015\u20132017 Sorentos. This is secondhand and unverified, and the owner says no recall has been issued [complaint:11508563].\n\nThe documents do not include any recall notice for this engine issue, so I can't confirm from them whether Kia has issued a recall. The complaints also are a small sample, so they don't show how common the problem is.",
+      "cited": [
+        "complaint:11574167",
+        "complaint:11568186",
+        "complaint:11585242",
+        "complaint:11442301",
+        "complaint:11508563"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c05",
+      "kind": "complaint",
+      "question": "What brake problems do owners describe on the 2018 Ram 3500?",
+      "reviewed": false,
+      "filters": "RAM, 3500, 2018, SERVICE BRAKES, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 3,
+      "top5": [
+        {
+          "doc_id": "complaint:11511816",
+          "score": 0.6819
+        },
+        {
+          "doc_id": "complaint:11548407",
+          "score": 0.646
+        },
+        {
+          "doc_id": "complaint:11419869",
+          "score": 0.6431
+        },
+        {
+          "doc_id": "complaint:11572275",
+          "score": 0.6407
+        },
+        {
+          "doc_id": "complaint:11419872",
+          "score": 0.6407
+        }
+      ],
+      "answer": "Owners of 2018 Ram 3500 trucks describe several brake-related problems in these complaints. These are unverified owner reports, not confirmed findings.\n\n**Complete or degraded braking**\n- One owner reported complete brake failure at speeds, with a stiff, slow-responding brake pedal and no warning lights. The dealer replaced the hydro-boost, but the failure persisted. A later brake master cylinder and ABS module replacement also did not stop the recurrence. The parking brake also reportedly failed to fully engage. The failure occurred at about 40,000 miles [complaint:11511816].\n- Another owner said the ABS had failed four times. After the fourth failure, the truck was left without brakes while the dealer waited for an ABS Module, which the owner was told would not arrive until June. The owner says ABS loss also disables cruise control and trailer brakes [complaint:11572275].\n\n**Brake hydraulic/ABS component failures**\n- One owner said the HCU pump failed at 33,489 miles and was replaced under warranty. At 45,000 miles the same problems returned: traction control, ABS, and cruise control stopped working, and the \"service electronic brakes\" message flashed intermittently. The owner said replacement parts were reportedly hard to get [complaint:11548407].\n- The owner in complaint:11572275 recorded HCU and ABS Module replacements at 5,374, 13,136, 20,607, and 29,769 miles.\n\nThe documents do not include any recall notices, NHTSA findings, or manufacturer statements about these brake issues. The owner in complaint:11511816 says the manufacturer opened a case but gave no additional help. The owner in complaint:11548407 says the failure seems common, but the documents do not establish how widespread it is.",
+      "cited": [
+        "complaint:11511816",
+        "complaint:11572275",
+        "complaint:11548407"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c06",
+      "kind": "complaint",
+      "question": "Do 2021 Tesla Model Y owners report phantom braking with Autopilot?",
+      "reviewed": false,
+      "filters": "TESLA, MODEL Y, 2021, DRIVER ASSISTANCE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11481660",
+          "score": 0.7905
+        },
+        {
+          "doc_id": "complaint:11474390",
+          "score": 0.7799
+        },
+        {
+          "doc_id": "complaint:11450197",
+          "score": 0.7772
+        },
+        {
+          "doc_id": "complaint:11469078",
+          "score": 0.7714
+        },
+        {
+          "doc_id": "complaint:11471422",
+          "score": 0.77
+        }
+      ],
+      "answer": "Yes. Several owner complaints describe unexpected automatic emergency braking (\"phantom braking\") while using cruise control or Autopilot on 2021 Tesla Model Y vehicles:\n\n- One owner reported 47 episodes in a couple of hours on January 26, 2022, some with vehicles tailgating, and said Tesla service could not resolve it [complaint:11481660].\n- Another owner described continuous episodes while using cruise control or Autopilot and said they nearly got rear-ended [complaint:11474390].\n- A third owner reported several thousand episodes and said service visits did not fix the issue [complaint:11469078].\n- A fourth owner said that on Autopilot at about 55 MPH, the vehicle braked and slowed to 35 MPH after a large truck passed in the opposite lane, which the owner called phantom braking [complaint:11450197].\n- A fifth owner reported thousands of episodes and said they were still waiting for a promised fix [complaint:11471422].\n\nThese are unverified owner reports. The documents don't include any recall or NHTSA finding on this issue, and they are a small sample, so they don't show how common the problem is.",
+      "cited": [
+        "complaint:11481660",
+        "complaint:11474390",
+        "complaint:11469078",
+        "complaint:11450197",
+        "complaint:11471422"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c07",
+      "kind": "complaint",
+      "question": "What do owners say about the engine on the 2017 Hyundai Santa Fe?",
+      "reviewed": false,
+      "filters": "HYUNDAI, SANTA FE, 2017, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11489952",
+          "score": 0.6903
+        },
+        {
+          "doc_id": "complaint:11525908",
+          "score": 0.6825
+        },
+        {
+          "doc_id": "complaint:11604406",
+          "score": 0.6649
+        },
+        {
+          "doc_id": "complaint:11589226",
+          "score": 0.6604
+        },
+        {
+          "doc_id": "complaint:11539808",
+          "score": 0.6426
+        }
+      ],
+      "answer": "Owners of 2017 Hyundai Santa Fe vehicles report engine failures, oil loss, and sudden power loss. These are unverified owner complaints, not established findings.\n\n- **Sudden engine failure:** One owner reported a complete engine failure at 106,000 miles while driving on the highway, with no check engine light or warning beforehand. The dealership reportedly said the short block had failed and a new engine was needed [complaint:11589226]. Another reported a total engine failure at 116,000 miles on a 3.3L engine, despite regular maintenance [complaint:11525908].\n- **Stalling and metal debris:** A 2.4L owner reported stalling on the highway, a check engine light, and a knocking sound. A repair shop reportedly found metal shavings in the engine and recommended a replacement costing up to $10,000 [complaint:11604406].\n- **Oil consumption and knocking:** One owner reported burning about 3 quarts of oil in two months, followed by a loud knock and loss of power at 103,000 miles. The owner suspected a camshaft problem, though the inspection was pending [complaint:11539808].\n- **High oil loss:** A complaint summarized as high oil loss and engine failure, with no further detail [complaint:11489952].\n\nOwners also expressed concern that the engine has not been recalled. One stated they would no longer buy or recommend Hyundai vehicles [complaint:11539808]. The documents provided contain no recall notices for this engine, so they cannot confirm whether a recall exists. The sample is also small, so it cannot show how common these failures are.",
+      "cited": [
+        "complaint:11589226",
+        "complaint:11525908",
+        "complaint:11604406",
+        "complaint:11539808",
+        "complaint:11489952"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c08",
+      "kind": "complaint",
+      "question": "Are there engine complaints for the 2021 Chevrolet Silverado 1500?",
+      "reviewed": false,
+      "filters": "CHEVROLET, SILVERADO 1500, 2021, ENGINE, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11688216",
+          "score": 0.7358
+        },
+        {
+          "doc_id": "complaint:11761138",
+          "score": 0.7
+        },
+        {
+          "doc_id": "complaint:11769394",
+          "score": 0.6929
+        },
+        {
+          "doc_id": "complaint:11470443",
+          "score": 0.6904
+        },
+        {
+          "doc_id": "complaint:11438535",
+          "score": 0.6856
+        }
+      ],
+      "answer": "Yes. The documents include four engine complaints for the 2021 Chevrolet Silverado 1500. These are unverified owner reports, not established findings:\n\n- **complaint:11438535** (dated 2021-10-28): An owner reported a check engine light in July and again in October 2021. Later, while driving, they heard a loud banging noise, lost power, and the truck shook badly. The dealer reportedly said the engine lifters had failed and there was probably a bent pushrod. The truck had about 7,000 miles. The owner also alleged this is an ongoing issue with the 5.3 and 6.2 engines, which the owner said Chevrolet is aware of. [complaint:11438535]\n- **complaint:11470443** (dated 2022-06-22): At about 10 MPH, an owner reported an engine misfire followed by a knocking sound, with no warning lights. A dealer reportedly suspected valve lifter failure but did not run a diagnostic test. The failure mileage was about 40,000, and the manufacturer was not made aware. [complaint:11470443]\n- **complaint:11688216** (dated 2025-09-18): An owner reported the engine failed and the truck has been unable to move since February 17, 2024. The owner believes it is related to a Chevy Trucks recall, but the documents contain no recall notice for this issue. The owner said GM had not responded. [complaint:11688216]\n- **complaint:11761138** (dated 2026-08-31): An owner reported rough idle, violent vibration on startup, and hesitation during acceleration, with no warning light. A dealer reportedly found no cause, and the truck was not repaired. The failure mileage was 70,000. [complaint:11761138]\n\nA fifth engine complaint, **complaint:11769394** (dated 2026-10-06), reports heavy smoking with a strong oil odor, an illuminated engine warning light, and a shutdown at 78,000 miles. The dealer reportedly confirmed engine failure and said the engine needed replacement. [complaint:11769394]\n\nSo there are five engine complaints in total for this vehicle. The documents are a small search sample, so they don't show how common these problems are. They also contain no recall notice covering these engine failures.",
+      "cited": [
+        "complaint:11438535",
+        "complaint:11470443",
+        "complaint:11688216",
+        "complaint:11761138",
+        "complaint:11769394"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c09",
+      "kind": "complaint",
+      "question": "What windshield or visibility problems are reported on the 2020 Subaru Outback?",
+      "reviewed": false,
+      "filters": "SUBARU, OUTBACK, 2020, VISIBILITY",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 3,
+      "top5": [
+        {
+          "doc_id": "complaint:11461151",
+          "score": 0.7115
+        },
+        {
+          "doc_id": "complaint:11443409",
+          "score": 0.7046
+        },
+        {
+          "doc_id": "complaint:11582464",
+          "score": 0.7004
+        },
+        {
+          "doc_id": "recall:20V766000",
+          "score": 0.6203
+        },
+        {
+          "doc_id": "recall:24V227000",
+          "score": 0.5645
+        }
+      ],
+      "answer": "Owners of 2020 Subaru Outbacks have reported windshield cracks in three complaints, and the documents also include one recall about a rearview display.\n\n**Windshield complaints (unverified owner reports):**\n- An owner reported a cracked and pitted windshield, noticed while entering the vehicle at about 46,000 miles. The vehicle was not diagnosed or repaired, and the manufacturer was not notified [complaint:11461151].\n- An owner reported a crack running from the lower driver's side toward the center of the windshield, noticed while driving, at about 10,000 miles. The owner did not know the cause. The vehicle was not diagnosed or repaired, and the manufacturer was not made aware [complaint:11443409].\n- An owner reported a large crack across the front windshield, noticed while driving, at about 59,000 miles. The vehicle was not taken to a dealer or independent mechanic or repaired, and the manufacturer was not notified [complaint:11582464].\n\n**Recall related to rear visibility:**\n- Subaru recalled certain 2020 Legacy and Outback vehicles with \"high\" or \"mid\" grade multimedia navigation. An August 2020 over-the-air software update may have failed to complete, causing the rearview display to shut off intermittently. Subaru says this fails to meet FMVSS 111 (Rear Visibility) and increases crash risk. The remedy is a software reprogram and, if needed, replacing the Cockpit Control Module [recall:20V766000]. This recall covers only vehicles with those navigation systems, not every 2020 Outback, and it concerns the rear camera display rather than the windshield.\n\nThe documents don't say whether the windshield cracks have any common cause, and no recall in the sample addresses windshield cracking.",
+      "cited": [
+        "complaint:11461151",
+        "complaint:11443409",
+        "complaint:11582464",
+        "recall:20V766000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "c10",
+      "kind": "complaint",
+      "question": "Do Fisker Ocean owners report brake problems?",
+      "reviewed": false,
+      "filters": "FISKER, OCEAN, SERVICE BRAKES, complaints only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 5,
+      "top5": [
+        {
+          "doc_id": "complaint:11576167",
+          "score": 0.7054
+        },
+        {
+          "doc_id": "complaint:11588381",
+          "score": 0.7016
+        },
+        {
+          "doc_id": "complaint:11566212",
+          "score": 0.6919
+        },
+        {
+          "doc_id": "complaint:11582636",
+          "score": 0.6861
+        },
+        {
+          "doc_id": "complaint:11590635",
+          "score": 0.6856
+        }
+      ],
+      "answer": "Yes. The provided complaints describe several brake-related problems in 2023 Fisker Ocean vehicles, all reported by owners and unverified:\n\n- **Brakes failing and rolling:** One owner reported the brakes failed to function as needed while driving, and the vehicle rolled backwards when the foot was removed from the brake pedal. The owner said the manufacturer advised a software update, which was not performed. Failure mileage was about 500. [complaint:11576167]\n- **Brakes failing over bumps:** Another owner reported that on several occasions the brake pedal was depressed but failed to operate as needed when driving over a bump, with no warning lights. Failure mileage was about 200. [complaint:11588381]\n- **Brake warning and soft pedal:** One owner reported the brake system malfunction warning light and \"regenerative braking\" message appeared, the brake pedal felt soft, and it made an abnormal sound. The vehicle was pending a diagnostic test at a dealer. Failure mileage was about 700. [complaint:11566212]\n- **Vibration and extended stopping distance:** One owner reported vibration and tapping from the brake pedal, a \"Regen Braking\" message, and extended stopping distance. The owner was told the cause was a software issue the manufacturer was working to resolve. Failure mileage was 10. [complaint:11582636]\n- **Rough, abrupt braking:** One owner with under 6,000 miles reported rough braking with noise, abrupt stops that threw passengers forward, and unexpected speed changes. The owner said Fisker customer support inspected the vehicle once and said an update was coming. [complaint:11590635]\n\nThese are owner reports only. The documents do not include any recall notices or confirmed findings on these issues, and they are a small sample, so they don't show how common these problems are.",
+      "cited": [
+        "complaint:11576167",
+        "complaint:11588381",
+        "complaint:11566212",
+        "complaint:11582636",
+        "complaint:11590635"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h01",
+      "kind": "holdout",
+      "question": "My Corvette's front trunk lid popped open while I was driving. Is that a known issue?",
+      "reviewed": false,
+      "filters": "CHEVROLET, CORVETTE, LATCHES AND LOCKS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "complaint:11475347",
+          "score": 0.6274
+        },
+        {
+          "doc_id": "complaint:11603188",
+          "score": 0.5944
+        },
+        {
+          "doc_id": "complaint:11338933",
+          "score": 0.5646
+        },
+        {
+          "doc_id": "recall:20V489000",
+          "score": 0.5617
+        },
+        {
+          "doc_id": "recall:20V461000",
+          "score": 0.5194
+        }
+      ],
+      "answer": "Yes. Your report matches a known issue, at least for 2020 model-year Corvettes. Your model year isn't stated, so check whether your car is covered.\n\n- **Recall 20V489000 (2020 Corvette):** GM found that the car can be driven with the front trunk lid unlatched, and that an unlatched lid can open at speed, blocking the driver's forward view and raising crash risk [recall:20V489000]. The remedy is a software update that limits speed to 26 mph when the lid isn't fully closed and latched, plus a change to the key fob hood-release operation. Owners can get it free from dealers or by over-the-air update [recall:20V489000]. GM's recall number is N202311160, and customer service is 1-866-522-9559 [recall:20V489000].\n- **Owner reports:** One 2020 owner said the front trunk opened on its own while pulling onto a road at about 30\u201340 mph, with no warning or audible alert. They said the dealer told them GM warranty wouldn't cover the problem or the damage [complaint:11338933]. This conflicts with the recall's description of visual and audible warnings, but it's an unverified owner account.\n- **Newer reports:** A 2022 Corvette owner reported the front storage area opening by itself, including while parked, and noted similar complaints about 2020 models [complaint:11475347]. Those are unverified reports. A 2024 owner reported false \"trunk open\" warnings and sudden loss of power, though the trunk was latched [complaint:11603188]. The documents don't show whether GM has recalled anything for those cases.\n\nIf your car is a 2020, contact a GM dealer, cite recall N202311160, and ask whether the software remedy has been applied. If you're not sure the recall covers your car, check your VIN with GM or NHTSA. Since the trunk opened while you were driving, consider reporting it to NHTSA as well.",
+      "cited": [
+        "recall:20V489000",
+        "complaint:11338933",
+        "complaint:11475347",
+        "complaint:11603188"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h02",
+      "kind": "holdout",
+      "question": "Does the electric Dodge Charger have a problem with the pedestrian warning sound?",
+      "reviewed": false,
+      "filters": "DODGE, CHARGER, EXTERIOR LIGHTING",
+      "dropped_filters": [],
+      "hit": false,
+      "hit_without_filters": true,
+      "relevant_in_top5": 0,
+      "top5": [
+        {
+          "doc_id": "complaint:11633899",
+          "score": 0.5874
+        },
+        {
+          "doc_id": "complaint:11422796",
+          "score": 0.579
+        },
+        {
+          "doc_id": "complaint:11728588",
+          "score": 0.5723
+        },
+        {
+          "doc_id": "recall:19V246000",
+          "score": 0.5305
+        },
+        {
+          "doc_id": "recall:24V112000",
+          "score": 0.5093
+        }
+      ],
+      "answer": "The documents don't answer this. None of them mention an electric Dodge Charger or a pedestrian warning sound. The closest item is a complaint about a 2023 Charger's audible safety chime, which the owner said failed to warn of brake drag, not pedestrians [complaint:11728588]. That is an unverified owner report about a different system.\n\nThe documents also include:\n- A 2014 Charger complaint about a popping sound and a suspension failure [complaint:11633899].\n- A 2019 Charger complaint about automatic braking engaging inadvertently and an inoperable instrument panel, which the owner reported [complaint:11422796].\n- A 2019 recall for sun visors that may lack required air bag warning information [recall:19V246000].\n- A 2023 recall for improperly adjusted parking brakes that may allow a roll away [recall:24V112000].",
+      "cited": [
+        "complaint:11728588",
+        "complaint:11633899",
+        "complaint:11422796",
+        "recall:19V246000",
+        "recall:24V112000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h03",
+      "kind": "holdout",
+      "question": "On my Ford Maverick the turn signal doesn't blink faster when a rear bulb is out. Recall?",
+      "reviewed": false,
+      "filters": "FORD, MAVERICK, EXTERIOR LIGHTING, recalls only",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:23V848000",
+          "score": 0.7135
+        },
+        {
+          "doc_id": "recall:25V094000",
+          "score": 0.7005
+        },
+        {
+          "doc_id": "recall:24V293000",
+          "score": 0.6234
+        },
+        {
+          "doc_id": "recall:25V095000",
+          "score": 0.6177
+        },
+        {
+          "doc_id": "recall:23V160000",
+          "score": 0.589
+        }
+      ],
+      "answer": "**Yes, this matches a recall, if your Maverick is a 2022-2024 model.**\n\n- **Recall 23V848 (Ford number 23C41)** covers 2022-2024 Maverick vehicles. If one rear turn signal stops working, the vehicle does not adjust its flash rate to warn the driver. Ford says this fails FMVSS 108. [recall:23V848000]\n- **Recall 25V094 (Ford number 25C04)** covers vehicles that were previously repaired incorrectly under 23V-848, with the same defect. [recall:25V094000]\n\nThe remedy for both is a free dealer update to the body control module software. Owners can contact Ford customer service at 866-436-7332 (or 1-866-436-7332). [recall:23V848000] [recall:25V094000]\n\nThe documents don't include VINs, so I can't confirm that your specific vehicle is in the recall population. Contact Ford with your VIN to check, and ask a dealer to confirm whether the software update has been applied. If you received a 2024 or 2025 owner letter, it would have been for one of these campaigns.",
+      "cited": [
+        "recall:23V848000",
+        "recall:25V094000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h04",
+      "kind": "holdout",
+      "question": "Could the passenger airbag deploy too hard on a 2025 GMC Canyon AT4X?",
+      "reviewed": false,
+      "filters": "GMC, CANYON, 2025, AIR BAGS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:25V856000",
+          "score": 0.6151
+        },
+        {
+          "doc_id": "complaint:11683406",
+          "score": 0.4958
+        },
+        {
+          "doc_id": "complaint:11708852",
+          "score": 0.45
+        },
+        {
+          "doc_id": "recall:26V114000",
+          "score": 0.3635
+        },
+        {
+          "doc_id": "complaint:11701507",
+          "score": 0.3081
+        }
+      ],
+      "answer": "Yes, according to a recall that covers this vehicle. Recall 25V856000 covers certain 2024\u20132026 GMC Canyon AT4X AEV vehicles, including 2025 models. It says incorrect sensing and diagnostic module (SDM) software may cause a second-stage passenger air bag to deploy when only a first stage is intended [recall:25V856000]. The recall doesn't use the words \"too hard,\" but a second-stage deployment when only the first stage is intended is the defect described. GM says this improper deployment increases the risk of injury in a crash [recall:25V856000].\n\nThe remedy is a free SDM software update at dealers. Owners can contact GMC customer service at 1-800-462-8782, and GM's recall number is N252533510 [recall:25V856000]. To check whether a specific vehicle is included, use its VIN on NHTSA.gov. The recall notes that the affected VINs became searchable there on December 11, 2025 [recall:25V856000].\n\nThe complaints in these documents don't address passenger airbag deployment, so they don't add to this answer.",
+      "cited": [
+        "recall:25V856000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h05",
+      "kind": "holdout",
+      "question": "Is the middle rear seat belt safe in a 2025 Hyundai Kona?",
+      "reviewed": false,
+      "filters": "HYUNDAI, KONA, 2025, SEAT BELTS",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:26V452000",
+          "score": 0.6989
+        },
+        {
+          "doc_id": "complaint:11631039",
+          "score": 0.6053
+        },
+        {
+          "doc_id": "complaint:11680468",
+          "score": 0.603
+        },
+        {
+          "doc_id": "complaint:11721002",
+          "score": 0.5663
+        },
+        {
+          "doc_id": "recall:26V047000",
+          "score": 0.4791
+        }
+      ],
+      "answer": "**No. A recall says not to use the 2025 Kona's rear center seat until it is repaired.**\n\n- Hyundai is recalling certain 2024-2026 Kona and 2024-2025 Kona Electric vehicles because the rear center seat belt buckle may fail to properly restrain an occupant in a crash. Passengers are advised not to use that seat until the remedy is performed [recall:26V452000].\n- The remedy is a replacement seat belt buckle assembly, done free of charge by dealers [recall:26V452000].\n- The recall says \"certain\" vehicles are affected, so check whether your VIN is included. VINs became searchable on NHTSA.gov on July 15, 2026 [recall:26V452000]. Hyundai's customer service number is 1-855-371-9460, and the recall number is 306 [recall:26V452000].\n\nThe documents don't show whether a repair has been completed on any particular vehicle, so I can't say whether a specific car has been fixed.",
+      "cited": [
+        "recall:26V452000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h06",
+      "kind": "holdout",
+      "question": "My 2017 Mazda3 wipers just stopped working in the rain. Anything on that?",
+      "reviewed": false,
+      "filters": "MAZDA, MAZDA3, 2017, VISIBILITY",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:19V272000",
+          "score": 0.6054
+        },
+        {
+          "doc_id": "complaint:11584492",
+          "score": 0.5639
+        },
+        {
+          "doc_id": "complaint:11494158",
+          "score": 0.5023
+        },
+        {
+          "doc_id": "complaint:11493694",
+          "score": 0.4577
+        },
+        {
+          "doc_id": "recall:23V487000",
+          "score": 0.3784
+        }
+      ],
+      "answer": "**Yes, there is a recall that may match your symptom.** Recall 19V272000 covers certain 2016-2018 Mazda3 vehicles. It describes a defective windshield wiper relay that may cause the wipers to become inoperative, reducing driver visibility [recall:19V272000]. Your 2017 model year is included, so you should check whether your VIN is in the recall.\n\n- **Remedy:** Dealers will replace the front body control module with a new module that has an improved wiper relay design, free of charge [recall:19V272000].\n- **Contact:** Mazda customer service at 1-800-222-5500, option 4. Mazda's recall number is 3219D [recall:19V272000].\n- **Safety risk:** Reduced visibility while driving can increase the risk of a crash [recall:19V272000].\n\nThe documents don't tell me whether your specific vehicle is affected, so confirm your VIN with Mazda or a dealer. Also, the documents don't mention wiper failures in complaints. A 2017 Mazda3 complaint describes rain-related electrical failures affecting the instrument cluster and cameras, which owners reported but which are unverified [complaint:11584492]. That is a different symptom, so it doesn't change the wiper recall advice.",
+      "cited": [
+        "recall:19V272000",
+        "complaint:11584492"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h07",
+      "kind": "holdout",
+      "question": "Are there engine oil problems with the turbo engine in newer Nissan Rogues?",
+      "reviewed": false,
+      "filters": "NISSAN, ROGUE, ENGINE",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:26V080000",
+          "score": 0.6355
+        },
+        {
+          "doc_id": "complaint:11770588",
+          "score": 0.6233
+        },
+        {
+          "doc_id": "complaint:11694780",
+          "score": 0.6192
+        },
+        {
+          "doc_id": "complaint:11609538",
+          "score": 0.6188
+        },
+        {
+          "doc_id": "recall:26V081000",
+          "score": 0.5761
+        }
+      ],
+      "answer": "Yes. Nissan has a recall for oil breakdown in the 1.5L VC-Turbo engine in 2023-2025 Rogues, and an owner of a 2023 Rogue reports oil-related symptoms that may fall outside that recall.\n\n- **Recall:** Nissan is recalling certain 2023-2025 Rogues with the 1.5L VC-Turbo engine because increased temperatures can break down engine oil, which may cause bearings to seize. The remedy is a software reprogram, inspection, and possible engine replacement. [recall:26V080000]\n- **Owner report (2023 Rogue):** The owner reports hesitation, shuddering, and abnormal RPM behavior. A dealer scanned the car and found code P0196, which relates to engine oil temperature. The owner also reports a continuing engine oil service message after an oil change and reset. The owner says Nissan Consumer Affairs told them their VIN is not included in the recall. These are unverified owner statements. [complaint:11770588]\n- **Owner report (2024 Rogue):** The owner reports the engine shook, the engine light came on, and power cut out while driving at 35 mph. The owner cites codes P2563 and P2565, and says the dealer told them the turbo had failed a recall. The documents don't explain those codes or confirm the cause, and the dealer's statement is only the owner's account. [complaint:11694780]\n\nThe recall covers oil breakdown specifically. The second recall, 26V081000, covers throttle body gears in 2024-2025 Rogues and does not address oil. [recall:26V081000]\n\nThese documents are a small search sample, so they don't show how widespread these problems are.",
+      "cited": [
+        "recall:26V080000",
+        "complaint:11770588",
+        "complaint:11694780",
+        "recall:26V081000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h08",
+      "kind": "holdout",
+      "question": "Can the suspension break on a 2021 Tesla Model Y?",
+      "reviewed": false,
+      "filters": "TESLA, MODEL Y, 2021, SUSPENSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "complaint:11757712",
+          "score": 0.7014
+        },
+        {
+          "doc_id": "complaint:11552039",
+          "score": 0.6772
+        },
+        {
+          "doc_id": "complaint:11763387",
+          "score": 0.6654
+        },
+        {
+          "doc_id": "recall:21V912000",
+          "score": 0.648
+        },
+        {
+          "doc_id": "recall:21V835000",
+          "score": 0.609
+        }
+      ],
+      "answer": "Yes, the documents describe suspension failures on 2021 Tesla Model Ys, and two recalls address related suspension defects. The sample doesn't establish how common these failures are.\n\n**Owner reports (unverified):**\n- One owner reported that the suspension was separating from the vehicle, and that a half shaft attaching the wheel to the subframe had fractured about a year earlier. A service center reportedly suggested the battery's weight may have been a cause. Mileage was 64,811. [complaint:11757712]\n- Another owner reported that two bolts from the driver's side suspension arm separated after the car was reversed. The vehicle was towed to a dealer, and the owner said the manufacturer had not yet been contacted. Mileage was 56,753. [complaint:11552039]\n- A third owner reported premature tearing of a front lower lateral link and compliance bushings at 31,930 miles. The owner referenced an NHTSA investigation (PE26006) and said a relative's Model Y had similar rear suspension issues. [complaint:11763387]\n\n**Recalls (manufacturer findings):**\n- Recall 21V912000 covers certain 2020\u20132022 Model Ys, where front and rear suspension knuckles may fracture and cause suspension links to separate. The stated consequence is reduced stability and control, increasing crash risk. The remedy is a free inspection and replacement of the knuckles as needed. [recall:21V912000]\n- Recall 21V835000 covers certain 2020\u20132021 Model Ys and 2019\u20132021 Model 3s, where front suspension lateral link fasteners may loosen, allowing the lateral link to separate from the subframe. The remedy is free tightening or replacement of the fasteners. [recall:21V835000]\n\nNote that these recalls list model years 2020\u20132022 and 2020\u20132021, so they may or may not cover a specific 2021 vehicle. Owners can check their VIN with Tesla or NHTSA, and can contact Tesla customer service at 1-877-798-3752 about recall SB-21-31-003 or SB-21-31-004.",
+      "cited": [
+        "complaint:11757712",
+        "complaint:11552039",
+        "complaint:11763387",
+        "recall:21V912000",
+        "recall:21V835000"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h09",
+      "kind": "holdout",
+      "question": "Why would a 2020 Toyota Yaris stall? I heard something about the fuel pump.",
+      "reviewed": false,
+      "filters": "TOYOTA, YARIS, 2020, FUEL AND PROPULSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:21V617000",
+          "score": 0.6979
+        },
+        {
+          "doc_id": "complaint:11438478",
+          "score": 0.5746
+        },
+        {
+          "doc_id": "complaint:11395251",
+          "score": 0.5131
+        },
+        {
+          "doc_id": "complaint:11544389",
+          "score": 0.5087
+        },
+        {
+          "doc_id": "recall:19V244000",
+          "score": 0.4081
+        }
+      ],
+      "answer": "A recall covers the fuel pump. Recall 21V617000 covers certain 2019-2020 Yaris vehicles because an impeller inside the low-pressure fuel pump may crack and deform, potentially causing the pump to fail. The recall says a fuel pump failure may cause an engine stall, which increases crash risk [recall:21V617000]. Dealers are to replace the low-pressure fuel pump assembly free of charge [recall:21V617000].\n\nOne 2020 Yaris owner reported a related problem. The owner said they received the recall notice but the repair part was unavailable, and the car bucked and jerked at low speeds and failed to respond when the accelerator was pressed [complaint:11438478]. The documents don't say whether that owner's car stalled or whether its problem was caused by the fuel pump defect.\n\nThe documents don't explain other possible causes of stalling in a 2020 Yaris. Other complaints describe a vibration at idle [complaint:11395251] and a no-start with a battery drain [complaint:11544389], but those owners don't report stalling, and the documents don't link those problems to the fuel pump.\n\nIf your car is a 2019 or 2020 Yaris, check whether the recall applies to it and contact Toyota at 1-800-331-4331 [recall:21V617000].",
+      "cited": [
+        "recall:21V617000",
+        "complaint:11438478",
+        "complaint:11395251",
+        "complaint:11544389"
+      ],
+      "invented_citations": []
+    },
+    {
+      "id": "h10",
+      "kind": "holdout",
+      "question": "Is there anything wrong with the front strut mounts on a 2023 VW GTI?",
+      "reviewed": false,
+      "filters": "VOLKSWAGEN, GTI, 2023, SUSPENSION",
+      "dropped_filters": [],
+      "hit": true,
+      "hit_without_filters": true,
+      "relevant_in_top5": 1,
+      "top5": [
+        {
+          "doc_id": "recall:23V437000",
+          "score": 0.6486
+        },
+        {
+          "doc_id": "recall:22V707000",
+          "score": 0.4264
+        },
+        {
+          "doc_id": "complaint:11624393",
+          "score": 0.4116
+        },
+        {
+          "doc_id": "complaint:11632262",
+          "score": 0.3364
+        },
+        {
+          "doc_id": "complaint:11663484",
+          "score": 0.3255
+        }
+      ],
+      "answer": "Yes, there is a recall covering front strut mounts on certain 2023 VW Golf R and GTI vehicles. The recall says the strut mount may be deformed, which can loosen the bolted connections to the suspension strut mounting. Loose suspension connections can cause steering instability and increase the risk of a crash. Dealers will inspect and replace the right and/or left strut mountings as necessary, free of charge. [recall:23V437000]\n\nThe documents don't say whether every 2023 GTI is affected, so owners should check whether their vehicle is included in the recall. Volkswagen's customer service number for this recall is 1-800-893-5298. [recall:23V437000]",
+      "cited": [
+        "recall:23V437000"
+      ],
+      "invented_citations": []
+    }
+  ]
+}
