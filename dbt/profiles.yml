@@ -1,0 +1,14 @@
+# No secrets here: everything comes from environment variables (see .env.example).
+vehicle_safety:
+  target: "{{ env_var('DBT_TARGET', 'prod') }}"
+  outputs:
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'DBT_PIPELINE') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH') }}"
+      role: PIPELINE_ROLE
+      warehouse: PIPELINE_WH
+      database: VEHICLE_SAFETY
+      schema: SILVER
+      threads: 4

@@ -1,0 +1,19 @@
+name: vehicle_safety
+version: "1.0.0"
+profile: vehicle_safety
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  vehicle_safety:
+    silver:
+      +schema: SILVER
+      +materialized: table
+
+seeds:
+  vehicle_safety:
+    +schema: SILVER

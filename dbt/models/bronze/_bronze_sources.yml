@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: VEHICLE_SAFETY
+    schema: BRONZE
+    description: >
+      Latest NHTSA snapshot, loaded as-is (all VARCHAR) by snowflake/04_load_bronze.sql
+      and later by Airflow. Column meanings are in docs/nhtsa/.
+    config:
+      loaded_at_field: _LOADED_AT
+      freshness:
+        warn_after: {count: 36, period: hour}
+        error_after: {count: 72, period: hour}
+    tables:
+      - name: complaints
+        description: One row per complaint, product and component (FLAT_CMPL.txt).
+        columns:
+          - name: CMPLID
+            description: Row ID. NHTSA's spec says it can change between files, so nothing downstream keys on it.
+            data_tests: [unique, not_null]
+          - name: ODINO
+            description: Complaint number. Repeats once per product and component.
+            data_tests: [not_null]
+      - name: recalls
+        description: One row per campaign, vehicle and component, from both recall files (pre- and post-2010).
+        columns:
+          - name: RECORD_ID
+            data_tests: [unique, not_null]
+          - name: CAMPNO
+            data_tests: [not_null]

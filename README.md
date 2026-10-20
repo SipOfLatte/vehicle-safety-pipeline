@@ -2,7 +2,7 @@
 
 A daily data pipeline on US vehicle safety data from NHTSA (the National Highway Traffic Safety Administration). Owner complaints and recall notices land in S3, load into Snowflake, and dbt models them through bronze, silver and gold layers. Two AI features will sit on the gold layer: a chatbot that answers questions from complaint and recall text and cites the records it used, and a text-to-SQL assistant over the gold tables.
 
-The project is being built over about six weeks. Week 1 is done: infrastructure, ingestion and the first load into Snowflake. Everything below marked "planned" isn't built yet.
+The project is being built over about six weeks. Weeks 1 and 2 are done: infrastructure, ingestion, the load into Snowflake, and the dbt silver layer. Everything below marked "planned" isn't built yet.
 
 ## Architecture
 
@@ -39,7 +39,7 @@ Airflow, daily: check for new files → S3 → COPY → dbt build → embed new 
 | Infrastructure | Terraform for S3, IAM, the AWS budget and SNS alerts | Built |
 | Ingestion | Python: ETag check, download, MD5 check, gzip, upload | Built |
 | Warehouse | Snowflake, two X-Small warehouses with resource monitors | Built |
-| Transformation | dbt Core, incremental models for the large tables | Planned (week 2) |
+| Transformation | dbt Core: silver layer with incremental models for the large tables | Silver built; gold planned (week 3) |
 | Orchestration | Airflow via Astronomer Cosmos, on an EC2 Spot instance | Planned (weeks 3 and 6) |
 | Embeddings and retrieval | Snowflake Cortex embeddings (Voyage AI as fallback), hand-written cosine similarity search with metadata filters | Planned (week 4) |
 | LLM | Claude API | Planned (weeks 4 and 5) |
@@ -65,6 +65,30 @@ Some of what profiling found, which shapes the silver layer (full notes in [docs
 - Make and model names need standardizing before they can be grouped or queried reliably. NHTSA's API, for example, searches Tesla's Model Y as `MODEL Y (All Variants)`, while the bulk file stores it as `MODEL Y` and, in one complaint, `ROBOTAXI (MODEL Y)`.
 - The complaint file has a vehicle operator name field (added April 2026, empty so far) and dealer contact details. Silver drops those fields so they never reach the app or the language model.
 
+## Silver layer
+
+The dbt project in [`dbt/`](dbt/) turns the raw rows into seven tables:
+
+| Model | Grain | Rows (19 Oct 2026) |
+|---|---|---|
+| `complaints` | one complaint | 1,626,788 |
+| `complaint_components` | complaint × product × component | 2,242,415 |
+| `recalls` | one recall campaign | 30,378 |
+| `recall_components` | campaign × product × vehicle × component | 195,355 |
+| `vehicle_name_map` | one reported make/model name | 28,834 |
+| `dim_vehicle` | standardized make × model × model year | 87,594 |
+| `dim_component` | one component name, split into its hierarchy | 819 |
+
+`complaints` and `complaint_components` are incremental. NHTSA sends a full snapshot every day, so each run hashes every complaint's source rows and merges only the complaints that are new or changed. The hash leaves out `CMPLID`, which NHTSA can renumber without anything else changing. A rerun on the same snapshot changes 0 rows.
+
+Make and model names are standardized in `vehicle_name_map`, using rules rather than a hand-written list:
+
+- Spellings that differ only in spaces or punctuation become the most common spelling: `F150` becomes `F-150`, `4 RUNNER` becomes `4RUNNER`, `MERCEDES BENZ` becomes `MERCEDES-BENZ`.
+- A model family drops trailing powertrain and drivetrain words, so `CAMRY HYBRID` stays a model but belongs to the family `CAMRY`.
+- A small seed file overrides the cases the rules get wrong, such as `ROBOTAXI (MODEL Y)`.
+
+These rules change the name on 2.4% of complaint and recall rows. Component names are grouped through another seed that maps NHTSA's 54 top-level component names to 28 groups, for example `SERVICE BRAKES` and `SERVICE BRAKES, HYDRAULIC`. dbt runs 45 tests on the silver layer and its sources: keys, relationships between tables, accepted values and year ranges.
+
 ## How ingestion works
 
 [`ingestion/nhtsa_ingest.py`](ingestion/nhtsa_ingest.py) sends a HEAD request for each file first. NHTSA's `ETag` header is the zip's MD5, so an unchanged ETag means the file can be skipped. When a file has changed, the script downloads it, checks the MD5, and re-compresses the text inside as gzip, because Snowflake's `COPY` can't read zip files. It uploads the result to `s3://<bucket>/bronze/<dataset>/load_date=YYYY-MM-DD/` and writes a small manifest. If the lifecycle rule has deleted the last copy, the script uploads the file again even if the ETag hasn't changed.
@@ -88,10 +112,11 @@ Measured costs will go here once the pipeline runs daily.
 infra/       Terraform: S3, IAM, budget, SNS. Setup steps in infra/README.md
 ingestion/   Download and S3 upload, with unit tests
 snowflake/   Setup and bronze load SQL
+dbt/         dbt project: silver models, seeds and tests
 docs/        Data profile and NHTSA field descriptions
 ```
 
-dbt, Airflow, the AI code and the app will be added in later weeks.
+Airflow, the gold models, the AI code and the app will be added in later weeks.
 
 ## Running it
 

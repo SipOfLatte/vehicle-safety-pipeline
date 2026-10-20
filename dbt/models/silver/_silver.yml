@@ -1,0 +1,167 @@
+version: 2
+
+models:
+  - name: complaints
+    description: >
+      One row per complaint (ODINO), rolled up from bronze's complaint × product × component rows.
+      Since NHTSA's May 2021 system change, blank Y/N fields arrive as N and blank counts as 0,
+      so false or 0 can also mean "not reported".
+    columns:
+      - name: odino
+        description: NHTSA complaint number.
+        data_tests: [unique, not_null]
+      - name: received_date
+        description: Date NHTSA received the complaint (LDATE).
+        data_tests: [not_null]
+      - name: incident_date
+        description: Date of the failure (FAILDATE). Missing for about 5% of complaints.
+      - name: crash
+        data_tests: [not_null]
+      - name: fire
+        data_tests: [not_null]
+      - name: injured
+        description: Number of people injured. Largest value across the complaint's rows.
+      - name: deaths
+        description: Number of deaths. Largest value across the complaint's rows.
+      - name: summary
+        description: >
+          Owner-written description (CDESCR). NHTSA cuts it off at 2,048 characters. Where a
+          complaint's rows disagree, the longest version is kept.
+      - name: complaint_source_code
+        description: How the complaint reached NHTSA (IVOQ = website, EVOQ = hotline, and so on; see docs/nhtsa/CMPL.txt).
+      - name: row_hash
+        description: Hash of the complaint's source rows (excluding CMPLID). Drives the incremental merge.
+        data_tests: [not_null]
+
+  - name: complaint_components
+    description: >
+      One row per complaint, product and component. Names are as reported (cleaned);
+      join vehicle_name_map on vehicle_name_key and dim_component on component_key for
+      standardized names.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              [odino, product_type, reported_make, reported_model, model_year, component_name]
+    columns:
+      - name: odino
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('complaints')
+                field: odino
+      - name: product_type
+        description: V vehicle, T tire, E equipment, C child seat.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['V', 'T', 'E', 'C']
+      - name: model_year
+        description: NULL where NHTSA reports 9999 (unknown or not applicable).
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1900
+                max_value: "year(current_date()) + 2"
+      - name: vehicle_name_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('vehicle_name_map')
+                field: vehicle_name_key
+      - name: component_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_component')
+                field: component_key
+
+  - name: recalls
+    description: One row per recall campaign, with the defect, consequence and remedy text.
+    columns:
+      - name: campaign_number
+        data_tests: [unique, not_null]
+      - name: source
+        description: Data source. Always NHTSA for now; ACCC recalls may be added later.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['NHTSA']
+      - name: recall_type_code
+        description: V vehicle, T tire, E equipment, C child seat, I and X are rare codes NHTSA doesn't document.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['V', 'T', 'E', 'C', 'I', 'X']
+      - name: initiated_by
+        description: MFR (manufacturer), ODI (NHTSA defects office) or OVSC (NHTSA compliance office).
+      - name: do_not_drive
+        description: NHTSA consumer advisory not to drive the vehicle until it is repaired.
+        data_tests: [not_null]
+      - name: park_outside
+        description: NHTSA consumer advisory to park outside because of fire risk.
+        data_tests: [not_null]
+
+  - name: recall_components
+    description: One row per recall campaign, product, vehicle and component.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              [campaign_number, product_type, reported_make, reported_model, model_year, component_name]
+    columns:
+      - name: campaign_number
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('recalls')
+                field: campaign_number
+      - name: vehicle_name_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('vehicle_name_map')
+                field: vehicle_name_key
+      - name: component_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_component')
+                field: component_key
+
+  - name: vehicle_name_map
+    description: >
+      Every make/model name NHTSA reports, mapped to a standardized make, model and model family.
+      mapping_rule says which rule changed it: override, family_rule, spelling_rule or as_reported.
+    columns:
+      - name: vehicle_name_key
+        data_tests: [unique, not_null]
+      - name: mapping_rule
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['override', 'family_rule', 'spelling_rule', 'as_reported']
+      - name: row_count
+        description: Complaint and recall rows that use this name.
+
+  - name: dim_vehicle
+    description: One row per standardized make, model and model year seen in vehicle complaints or recalls.
+    columns:
+      - name: vehicle_id
+        data_tests: [unique, not_null]
+
+  - name: dim_component
+    description: One row per component name, split into its hierarchy levels and grouped.
+    columns:
+      - name: component_key
+        data_tests: [unique, not_null]
+      - name: component_group
+        description: From the component_groups seed. A NULL means NHTSA added a top-level name the seed doesn't cover yet.
+        data_tests:
+          - not_null:
+              config:
+                severity: warn

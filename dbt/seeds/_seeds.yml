@@ -1,0 +1,25 @@
+version: 2
+
+seeds:
+  - name: component_groups
+    description: >
+      Maps NHTSA's top-level component names (the part before the first colon) to a
+      smaller set of groups. Complaint and recall forms have used different names for
+      the same thing over the years, e.g. SERVICE BRAKES vs SERVICE BRAKES, HYDRAULIC.
+    columns:
+      - name: component_level1
+        data_tests: [unique, not_null]
+      - name: component_group
+        data_tests: [not_null]
+
+  - name: model_family_overrides
+    description: >
+      Hand-set model families for names the automatic rules in vehicle_name_map get
+      wrong. Keyed on the standardized make and model.
+    columns:
+      - name: model_family
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [make, model]

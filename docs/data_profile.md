@@ -27,6 +27,8 @@ Snowflake COPY can't read zip files, so ingestion re-compresses each one to `.tx
 
 Complaints have one row per complaint and component. `CMPLID` is unique per row, but NHTSA's spec says it is updateable and can change between files, so silver should not use it as a stable key. `ODINO` is the complaint number: there are 1,626,788 distinct values. For complaints received before 15 Dec 2002 one `ODINO` can also cover several products. 16,877 `ODINO`s have different `CDESCR` text across their rows, and the silver `complaints` model needs a rule for those.
 
+41,687 complaints cover more than one product (several vehicles, or a vehicle plus its tires or a child seat), and 29,623 of those were received after December 2002, so this isn't only the older multi-product case the spec describes. Silver therefore has a complaint table and a separate complaint × product × component table.
+
 Recalls have one row per campaign, make, model, model year and component. `RECORD_ID` is unique. The post-2010 file has 15,319 distinct campaigns (`CAMPNO`).
 
 Investigations have one row per investigation and vehicle: 5,351 distinct investigations.
