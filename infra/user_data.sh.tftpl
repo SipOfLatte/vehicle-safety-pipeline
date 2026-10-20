@@ -52,9 +52,15 @@ chmod 600 "$REPO/airflow/.env"
 cd "$REPO/airflow"
 astro dev stop || true
 astro dev start --no-browser --wait 20m
-# New metadata databases start with DAGs paused.
-astro dev run dags unpause nhtsa_daily
-astro dev run dags unpause silver_full_refresh
+# New metadata databases start with DAGs paused. The DAG processor needs a minute or two after
+# startup to register them, so wait until each DAG exists before unpausing it.
+for dag in nhtsa_daily silver_full_refresh; do
+  for attempt in $(seq 40); do
+    astro dev run dags details "$dag" > /dev/null 2>&1 && break
+    sleep 15
+  done
+  astro dev run dags unpause "$dag"
+done
 SCRIPT
 chmod 755 /usr/local/bin/vsp-airflow-start
 

@@ -19,6 +19,10 @@ DBT_EXECUTION = ExecutionConfig(dbt_executable_path=str(AIRFLOW_HOME / "dbt_venv
 
 
 def dbt_render(**kwargs) -> RenderConfig:
+    # A test that reads two models (e.g. recall_components -> vehicle_name_map relationships) gets its own
+    # task after both. Attached to the first model, it ran before the second was rebuilt and failed on
+    # 20 Oct 2026 when new recalls brought vehicle names the map didn't have yet.
+    kwargs.setdefault("should_detach_multiple_parents_tests", True)
     return RenderConfig(load_method=LoadMode.DBT_LS, **kwargs)
 
 

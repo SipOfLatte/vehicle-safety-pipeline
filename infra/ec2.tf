@@ -132,7 +132,9 @@ resource "aws_instance" "airflow" {
   tags = { Name = "vehicle-safety-airflow" }
 
   lifecycle {
-    ignore_changes = [ami] # a newer AMI shouldn't replace the running server
+    # A newer AMI shouldn't replace the running server, and user data only runs on first boot:
+    # changes to it apply to a new instance, and the running one is updated over SSM.
+    ignore_changes = [ami, user_data]
   }
 }
 
