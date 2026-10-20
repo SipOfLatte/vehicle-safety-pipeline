@@ -26,13 +26,14 @@ jobs:
       - name: Lint
         run: ruff check .
       - name: Ingestion tests
-        run: cd ingestion && pytest -q
+        run: cd ingestion && python -m pytest -q
       - name: AI tests (no network; the model and Snowflake are faked)
-        run: pytest -q ai
+        run: python -m pytest -q ai  # python -m puts the repo root on sys.path for `import ai`
 
   dag-tests:
     # Builds the same Astro image as production and parses the DAGs inside it. Cosmos runs `dbt ls`
-    # while parsing, which needs the profile's environment variables but never connects.
+    # while parsing, which needs the profile's environment variables but never connects, and reads an
+    # Airflow Variable, so the container gets an empty SQLite metadata database first.
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +48,7 @@ jobs:
             -e SNOWFLAKE_ACCOUNT=ci-placeholder -e SNOWFLAKE_USER=ci -e SNOWFLAKE_PRIVATE_KEY_PATH=/dev/null \
             -e ALERTS_TOPIC_ARN=arn:aws:sns:ap-southeast-2:000000000000:placeholder -e NHTSA_BUCKET=placeholder \
             -e PYTHONPATH=/usr/local/airflow/ingestion \
-            vsp-airflow bash -c "cd /usr/local/airflow/dbt && /usr/local/airflow/dbt_venv/bin/dbt deps --quiet && cd .. && python -m pytest -q -p no:cacheprovider tests/dags"
+            vsp-airflow bash -c "airflow db migrate > /dev/null && cd /usr/local/airflow/dbt && /usr/local/airflow/dbt_venv/bin/dbt deps --quiet && cd .. && python -m pytest -q -p no:cacheprovider tests/dags"
 
   dbt-build:
     # Pull requests only: builds every model and runs every test into CI_SILVER, CI_GOLD and CI_AI
