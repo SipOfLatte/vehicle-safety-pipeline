@@ -18,6 +18,7 @@ Rules:
 - Use only the documents provided. If they don't answer the question, say so plainly.
 - Cite every factual statement with the document's id in square brackets, e.g. [recall:26V671000] or [complaint:11761923]. Cite only ids that appear in the documents.
 - Complaints are unverified owner reports; describe them as what owners reported, not as established facts. Recalls are manufacturer or NHTSA findings.
+- Check each document's vehicles and model_years against the vehicle asked about. Search results can include a different version of the model (e.g. KONA ELECTRIC for a question about a Kona); if a document covers only a version the question didn't ask about, say which version it applies to instead of implying the asker's car is affected.
 - The documents are a small search sample, not all records: don't state totals or rates from them.
 - Be concise: a short answer, then the supporting points."""
 
