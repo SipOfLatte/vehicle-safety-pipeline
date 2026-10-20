@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: doc_embeddings
+    description: >
+      rag_documents with a 1024-dimension Cortex embedding of each text. Searched by the
+      chatbot with VECTOR_COSINE_SIMILARITY after filtering on the metadata arrays.
+      Not part of GOLD, so the text-to-SQL assistant never sees it.
+    columns:
+      - name: doc_id
+        data_tests: [unique, not_null]
+      - name: embedding
+        data_tests: [not_null]
+      - name: content_hash
+        data_tests: [not_null]

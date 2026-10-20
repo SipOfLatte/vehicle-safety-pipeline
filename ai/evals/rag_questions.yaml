@@ -1,0 +1,93 @@
+# RAG retrieval eval: 20 questions with known relevant documents.
+#
+# recall questions: written from one specific recall, in owner's words rather than the recall's.
+#   Hit = that recall is in the top 5.
+# complaint questions: about one vehicle, model year and component group with many complaints.
+#   Hit = at least one top-5 document is a complaint about that vehicle, year and group.
+#
+# Drafted from the data on 20 Oct 2026; every question needs a human check before the score is reported.
+# Set reviewed: true on each one you've checked.
+
+recall:
+  - id: r01
+    question: "Is there a recall about the roof cargo rails on 2020 BMW X3s coming loose in a crash?"
+    relevant: recall:24V764000
+    reviewed: false
+  - id: r02
+    question: "My 2021 Chevy Bolt already had the battery recall done. Is there another recall about the diagnostic software?"
+    relevant: recall:24V481000
+    reviewed: false
+  - id: r03
+    question: "Have there been steering recalls on the Ford Transit Trail because of corrosion?"
+    relevant: recall:24V542000
+    reviewed: false
+  - id: r04
+    question: "Can the side airbags on a 2019 Honda Odyssey go off on their own?"
+    relevant: recall:26V227000
+    reviewed: false
+  - id: r05
+    question: "Is there a problem with the second row power seats on the 2026 Hyundai Ioniq 9 not detecting people?"
+    relevant: recall:26V588000
+    reviewed: false
+  - id: r06
+    question: "Could the front side airbags fail to deploy on a 2023 Jeep Grand Cherokee because of a loose connector?"
+    relevant: recall:24V897000
+    reviewed: false
+  - id: r07
+    question: "The backup camera on my 2019 Kia Sorento stops showing a picture after rain. Is that a known recall?"
+    relevant: recall:23V639000
+    reviewed: false
+  - id: r08
+    question: "Are there recalls for transmission fluid leaking from the dipstick tube on Ram 2500 trucks?"
+    relevant: recall:22V835000
+    reviewed: false
+  - id: r09
+    question: "Is there a recall for the 2020 Subaru Outback transmission control software engaging the clutch too early?"
+    relevant: recall:22V485000
+    reviewed: false
+  - id: r10
+    question: "Can the rear axle shaft come out of the housing on a 2022 Toyota Tacoma?"
+    relevant: recall:24V152000
+    reviewed: false
+
+complaint:
+  - id: c01
+    question: "What engine problems do owners report on the 2017 Ford Escape?"
+    relevant: {make: FORD, model_family: ESCAPE, model_year: 2017, component_group: ENGINE}
+    reviewed: false
+  - id: c02
+    question: "Do 2019 Jeep Cherokee owners complain about the transmission?"
+    relevant: {make: JEEP, model_family: CHEROKEE, model_year: 2019, component_group: POWER TRAIN}
+    reviewed: false
+  - id: c03
+    question: "What steering issues have people had with the 2022 Honda Civic?"
+    relevant: {make: HONDA, model_family: CIVIC, model_year: 2022, component_group: STEERING}
+    reviewed: false
+  - id: c04
+    question: "Are there complaints about engine failure on the 2016 Kia Sorento?"
+    relevant: {make: KIA, model_family: SORENTO, model_year: 2016, component_group: ENGINE}
+    reviewed: false
+  - id: c05
+    question: "What brake problems do owners describe on the 2018 Ram 3500?"
+    relevant: {make: RAM, model_family: "3500", model_year: 2018, component_group: SERVICE BRAKES}
+    reviewed: false
+  - id: c06
+    question: "Do 2021 Tesla Model Y owners report phantom braking with Autopilot?"
+    relevant: {make: TESLA, model_family: MODEL Y, model_year: 2021, component_group: DRIVER ASSISTANCE}
+    reviewed: false
+  - id: c07
+    question: "What do owners say about the engine on the 2017 Hyundai Santa Fe?"
+    relevant: {make: HYUNDAI, model_family: SANTA FE, model_year: 2017, component_group: ENGINE}
+    reviewed: false
+  - id: c08
+    question: "Are there engine complaints for the 2021 Chevrolet Silverado 1500?"
+    relevant: {make: CHEVROLET, model_family: SILVERADO 1500, model_year: 2021, component_group: ENGINE}
+    reviewed: false
+  - id: c09
+    question: "What windshield or visibility problems are reported on the 2020 Subaru Outback?"
+    relevant: {make: SUBARU, model_family: OUTBACK, model_year: 2020, component_group: VISIBILITY}
+    reviewed: false
+  - id: c10
+    question: "Do Fisker Ocean owners report brake problems?"
+    relevant: {make: FISKER, model_family: OCEAN, model_year: 2023, component_group: SERVICE BRAKES}
+    reviewed: false
