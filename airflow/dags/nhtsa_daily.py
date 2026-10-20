@@ -65,7 +65,7 @@ def nhtsa_daily():
         execution_config=DBT_EXECUTION,
         render_config=dbt_render(),
     )
-    block_on_detached_tests(dbt_build.children.values())
+    block_on_detached_tests(dbt_build.iter_tasks())
 
     loaded >> dbt_build >> health_check()
 
