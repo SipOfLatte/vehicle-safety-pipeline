@@ -51,3 +51,11 @@ Day to day, `airflow_server.sh` wraps the SSM commands:
 
 Three things email the alerts topic: failed Airflow tasks; a CloudWatch alarm when the instance fails its status checks; and an EventBridge rule when AWS warns of a Spot interruption, or the instance stops or starts again. A stopped instance sends no metrics and runs no Airflow, so that last rule is the only alert while the server is down.
 
+### Pausing or removing the server
+
+The server runs on a persistent Spot request, which is what lets AWS restart it after reclaiming capacity. The same request means an instance terminated from the EC2 console gets replaced by a new one, which keeps billing.
+
+- To pause, stop the instance (`aws ec2 stop-instances --instance-ids <id>`, or Stop in the console). It stays stopped until you start it, and only the 20 GB disk is billed meanwhile. The stop and the later start each send an alert email.
+- To remove it, set `airflow_enabled = false` in `terraform.tfvars` and run `terraform apply`. The AWS provider cancels the Spot request when it destroys a Spot instance. Then check that nothing is left: `aws ec2 describe-spot-instance-requests --filters Name=state,Values=open,active` should list nothing for this project.
+- In the console, cancel the request under EC2 → Spot Requests first, and only then terminate the instance.
+

@@ -1,35 +1,43 @@
 # Vehicle safety pipeline
 
+[![CI](https://github.com/SipOfLatte/vehicle-safety-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/SipOfLatte/vehicle-safety-pipeline/actions/workflows/ci.yml)
+
+Live app: [vehicle-safety-pipeline.streamlit.app](https://vehicle-safety-pipeline.streamlit.app). Streamlit Community Cloud can be slow or blocked from mainland China, so a VPN may be needed there.
+
 A daily data pipeline on US vehicle safety data from NHTSA (the National Highway Traffic Safety Administration). Owner complaints and recall notices land in S3, load into Snowflake, and dbt models them through bronze, silver and gold layers. Two AI features sit on the gold layer: a chatbot that answers questions from complaint and recall text and cites the records it used, and a text-to-SQL assistant over the gold tables.
 
-The project is being built over about six weeks. Weeks 1 to 5 are done: infrastructure, ingestion, the load into Snowflake, the dbt silver and gold layers, an Airflow DAG that runs it all daily (locally for now), the RAG chatbot and the text-to-SQL assistant (both running locally, not deployed yet). Everything below marked "planned" isn't built yet.
+It was built over six weeks and runs on its own: Airflow on an EC2 Spot instance loads new NHTSA files at 12:00 UTC each day, dbt rebuilds the layers, new text gets embedded, and the public app reads the result.
 
 ## Architecture
 
-```
-NHTSA bulk files ──▶ S3 bronze (.txt.gz, partitioned by load date)
-                         │  COPY INTO
-                         ▼
-                Snowflake BRONZE (latest snapshot)
-                         │  dbt
-                         ▼
-                SILVER: typed, deduplicated, standardized make/model/component
-                         │  dbt
-                         ▼
-                GOLD: marts for analysis and the AI layer
-                         │
-          ┌──────────────┴───────────────┐
-          ▼                              ▼
-   RAG chatbot                     Text-to-SQL
-   embeddings in a Snowflake       question → SQL on GOLD →
-   VECTOR column, answers cite     read-only role → answer
-   complaint and recall IDs        with the SQL shown
-          └──────────────┬───────────────┘
-                         ▼
-                   Streamlit app
+```mermaid
+flowchart TD
+    nhtsa["NHTSA bulk files<br/>(complaints, recalls)"] -->|"ETag check, download,<br/>zip to gzip"| s3["S3 bronze<br/>partitioned by load date"]
+    s3 -->|COPY INTO| bronze["Snowflake BRONZE<br/>latest snapshot"]
+    bronze -->|dbt| silver["SILVER<br/>typed, deduplicated,<br/>standardized names"]
+    silver -->|dbt| gold["GOLD<br/>analytics marts and RAG documents"]
+    gold -->|"dbt + Cortex embeddings"| ai["AI.DOC_EMBEDDINGS<br/>VECTOR(1024)"]
+    ai --> chat["Chat page<br/>Claude Haiku 5.5, cited answers"]
+    gold -->|"read-only ASK_ROLE"| ask["Ask page<br/>Claude Sonnet 5.5 writes SQL"]
+    chat --> app(["Streamlit Community Cloud"])
+    ask --> app
 
-Airflow, daily: check for new files → S3 → COPY → dbt build → embed new text → health checks
+    airflow{{"Airflow 3 + Cosmos<br/>EC2 t4g.medium Spot, daily 12:00 UTC"}} -.->|orchestrates| s3
+    airflow -.-> bronze
+    airflow -.-> silver
+    airflow -.->|"failures, Spot stops"| sns["SNS email alerts"]
+    ci{{"GitHub Actions<br/>lint, tests, DAG tests,<br/>dbt build on PRs"}} -.->|"reads BRONZE,<br/>builds CI_* schemas"| bronze
 ```
+
+Terraform manages the AWS side: the S3 bucket, IAM roles, the Spot instance with no inbound ports, the budget, and the alarms. Snowflake objects come from the numbered SQL scripts in `snowflake/`.
+
+## The app
+
+The Chat page answers questions about specific vehicles from complaint and recall text and cites every record it used. The Ask page answers questions about numbers: Claude writes SQL against the gold tables, runs it read-only, and shows the SQL, the table and a chart next to its answer.
+
+![Chat page answering whether the suspension can break on a 2021 Tesla Model Y, citing three complaints and two recalls](docs/images/chat.png)
+
+![Ask page showing monthly driver assistance complaints for the Tesla Model Y, with a line chart and the result table](docs/images/ask.png)
 
 ## Stack
 
@@ -40,11 +48,11 @@ Airflow, daily: check for new files → S3 → COPY → dbt build → embed new 
 | Ingestion | Python: ETag check, download, MD5 check, gzip, upload | Built |
 | Warehouse | Snowflake, two X-Small warehouses with resource monitors | Built |
 | Transformation | dbt Core: silver and gold layers, incremental models for the large tables | Built |
-| Orchestration | Airflow 3 via Astronomer Cosmos, failure alerts by email through SNS | Built and running locally; EC2 Spot planned (week 6) |
+| Orchestration | Airflow 3 via Astronomer Cosmos on one EC2 t4g.medium Spot instance, UI through SSM only, failure alerts by email through SNS | Running daily |
 | Embeddings and retrieval | Snowflake Cortex embeddings (`snowflake-arctic-embed-l-v2.0`), hand-written cosine similarity search with metadata filters | Built |
 | LLM | Claude API: Claude Haiku 5.5 for the chatbot, Claude Sonnet 5.5 for text-to-SQL | Built |
-| App | Streamlit: Chat and Ask pages built and tested locally | Deploy to Streamlit Community Cloud planned (week 6) |
-| CI | GitHub Actions | Planned (week 6) |
+| App | Streamlit Community Cloud: Chat and Ask pages, data freshness in the sidebar | Live |
+| CI | GitHub Actions: ruff, unit tests, DAG tests inside the Airflow image, `dbt build` into CI schemas on pull requests; AI evals on a manual button | Running |
 
 ## The data
 
@@ -165,6 +173,16 @@ The first tuning run scored 16/25. Most misses had the right answer in the text 
 
 Snowflake's bronze tables hold only the latest snapshot. Each load empties and refills a table inside one transaction, so a failed load leaves the previous day's data in place. Earlier snapshots stay in S3.
 
+## Running it in production
+
+Airflow runs the same Astro project as a laptop does, on one t4g.medium Spot instance in Sydney. The instance has no inbound ports: the UI is reached through an SSM port forward, and the Snowflake key is read from SSM Parameter Store at boot. If AWS reclaims the capacity, the instance stops with its disk intact and starts again when capacity returns. A run that's missed is safe to repeat, because ingestion skips files whose ETag hasn't changed and every load replaces a whole snapshot in one transaction.
+
+Three things send email: a failed Airflow task, a failed EC2 status check, and an EventBridge rule for Spot interruptions and stops. A stopped instance runs no Airflow and reports no metrics, so the last one is the only alert while the server is down. The app's sidebar also warns when the data is more than 36 hours old.
+
+Streamlit Community Cloud redeploys the app when `main` changes. Changes under `ai/` only take effect after rebooting the app from the Streamlit dashboard, because Streamlit doesn't reload modules imported from outside `app/`, and the reboot also clears the 24-hour answer cache.
+
+The first daily run with new data failed on a dbt `relationships` test. Cosmos runs each model's tests right after that model, so the check that every recall's vehicle name exists in `vehicle_name_map` ran before the map had been rebuilt with the day's three new names. `dbt build` orders this correctly, which is why CI had passed. Tests that read two models now run as their own task after both, the models downstream wait for them as they would in `dbt build`, and a DAG test checks the ordering.
+
 ## Cost
 
 The target is under USD 40 a month once everything runs daily. The pieces that keep it there:
@@ -174,30 +192,38 @@ The target is under USD 40 a month once everything runs daily. The pieces that k
 - caching app query results for 24 hours, since the data changes once a day
 - prompt caching and per-session limits on the Claude API
 
-Measured costs will go here once the pipeline runs daily.
+Expected monthly costs, to be replaced with measured ones after the first full month:
+
+- AWS about USD 18: the Spot instance at about USD 0.017 an hour (USD 12.70), a 20 GB disk (USD 1.90) and its public IPv4 address (USD 3.65)
+- Snowflake about USD 8 to 12, mostly the daily dbt build and the app's queries
+- Claude about USD 1 to 5. A chatbot question costs about USD 0.0006 and a text-to-SQL question about USD 0.015, and the app stops answering when a page's daily budget is used up.
 
 ## Repository layout
 
 ```
-infra/       Terraform: S3, IAM, budget, SNS. Setup steps in infra/README.md
+.github/     CI workflow and the manual AI eval workflow
+infra/       Terraform: S3, IAM, budget, SNS, the Airflow EC2 server and alerts. Setup steps in infra/README.md
 ingestion/   Download and S3 upload, with unit tests
-snowflake/   Setup and bronze load SQL
+snowflake/   Setup, bronze load, service users and the read-only role, as numbered SQL scripts
 dbt/         dbt project: silver and gold models, seeds and tests
 airflow/     Astro project: the daily and weekly DAGs, DAG tests
 ai/          RAG retrieval and answers, text-to-SQL agent, eval questions and runners
 app/         Streamlit app
-docs/        Data profile and NHTSA field descriptions
+docs/        Data profile, NHTSA field descriptions and screenshots
 ```
 
 ## Running it
 
-Setup is in [infra/README.md](infra/README.md): Terraform first, then the Snowflake scripts in order, then ingestion and the bronze load. Tests for the ingestion code:
+Setup is in [infra/README.md](infra/README.md): Terraform first, then the Snowflake scripts in order, then ingestion and the bronze load, then the Airflow server. The checks CI runs on every push can be run locally from the repo root:
 
 ```
-cd ingestion
-pip install -r requirements.txt
-pytest
+pip install ruff==0.17.1 pytest -r ingestion/requirements.txt -r ai/requirements.txt
+ruff check .
+(cd ingestion && python -m pytest)
+python -m pytest ai
 ```
+
+The AI tests fake Claude and Snowflake, so they need no keys. The evals call both and cost money; run them from the "AI evals" workflow in GitHub Actions or with `python -m ai.evals.run_rag_eval` and `python -m ai.evals.run_sql_eval`.
 
 ## Data source
 
