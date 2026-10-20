@@ -125,7 +125,7 @@ def ingest_dataset(s3, bucket: str, dataset: str, load_date: dt.date, workdir: P
         "s3_key": key,
         "load_date": load_date.isoformat(),
         "zip_bytes": zip_bytes,
-        "uploaded_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "uploaded_at": dt.datetime.now(dt.UTC).isoformat(),
     }
     s3.put_object(
         Bucket=bucket, Key=f"bronze/{dataset}/_latest.json",

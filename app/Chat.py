@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from common import check_limits, claude, data_as_of, load_secrets, record_usage, snowflake
+from common import check_limits, claude, data_as_of, load_secrets, record_usage, show_freshness, snowflake
 
 load_secrets()
 
@@ -11,6 +11,7 @@ from ai.rag.retrieval import extract_filters, load_vocabulary, search, validate_
 
 st.set_page_config(page_title="Vehicle safety chat", page_icon="🚗", layout="centered")
 st.title("Vehicle safety chat")
+show_freshness()
 st.caption(
     f"Searches NHTSA owner complaints (since 2020) and vehicle recalls (since 2010). "
     f"Data as of {data_as_of()}. Complaints are unverified owner reports."

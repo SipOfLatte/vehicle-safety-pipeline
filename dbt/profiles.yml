@@ -12,3 +12,14 @@ vehicle_safety:
       database: VEHICLE_SAFETY
       schema: SILVER
       threads: 4
+    # GitHub Actions on pull requests: builds into CI_SILVER, CI_GOLD and CI_AI (snowflake/09_ci_user.sql).
+    ci:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: CI_DBT
+      private_key: "{{ env_var('SNOWFLAKE_PRIVATE_KEY') }}"
+      role: CI_ROLE
+      warehouse: PIPELINE_WH
+      database: VEHICLE_SAFETY
+      schema: CI
+      threads: 4

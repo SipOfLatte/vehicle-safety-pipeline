@@ -5,7 +5,7 @@ SQL wouldn't reach existing rows. Rebuilding once a week applies it everywhere. 
 about 15 seconds on an X-Small warehouse. Runs Sunday, after the daily run.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from cosmos import DbtDag
 
@@ -14,7 +14,7 @@ from common import DBT_EXECUTION, DBT_PROFILE, DBT_PROJECT, dbt_render, notify_f
 silver_full_refresh = DbtDag(
     dag_id="silver_full_refresh",
     schedule="0 14 * * 0",
-    start_date=datetime(2026, 10, 20, tzinfo=timezone.utc),
+    start_date=datetime(2026, 10, 20, tzinfo=UTC),
     catchup=False,
     max_active_runs=1,
     default_args={"retries": 1, "retry_delay": timedelta(minutes=10), "on_failure_callback": notify_failure},

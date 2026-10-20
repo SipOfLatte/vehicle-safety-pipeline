@@ -1,0 +1,83 @@
+#!/bin/bash
+# First boot of the Airflow server: install Docker, the Astro CLI and the repo, then register a
+# systemd service that writes the secrets and starts Airflow on every boot (including after a
+# Spot stop and start). Terraform fills in ${region}, ${bucket}, ${alerts_topic_arn} and ${repo_url};
+# $${...} is a shell variable.
+set -euxo pipefail
+
+dnf install -y docker git
+systemctl enable --now docker
+usermod -aG docker ec2-user
+
+# 2 GB of swap: Airflow's containers plus a dbt run come close to the t4g.medium's 4 GB.
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
+
+# Same Astro CLI version as on the laptop.
+curl -sSL https://install.astronomer.io | bash -s -- v1.46.0
+
+sudo -u ec2-user git clone ${repo_url} /home/ec2-user/vehicle-safety-pipeline
+
+cat > /usr/local/bin/vsp-airflow-start <<'SCRIPT'
+#!/bin/bash
+# Writes airflow/.env and the Snowflake key from SSM Parameter Store, then (re)starts Airflow.
+set -euo pipefail
+REPO=/home/ec2-user/vehicle-safety-pipeline
+param() {
+  aws ssm get-parameter --region ${region} --name "/vehicle-safety/$1" --with-decryption \
+    --query Parameter.Value --output text
+}
+
+mkdir -p "$HOME/.snowflake/keys" "$HOME/.aws"  # empty ~/.aws: boto3 falls back to the instance role
+# 644: the Airflow containers run as their own user and must read the mounted key. Only ec2-user
+# and root exist on this machine.
+param snowflake_private_key > "$HOME/.snowflake/keys/dbt_pipeline_key.p8"
+chmod 644 "$HOME/.snowflake/keys/dbt_pipeline_key.p8"
+
+cat > "$REPO/airflow/.env" <<ENV
+SNOWFLAKE_ACCOUNT=$(param snowflake_account)
+SNOWFLAKE_USER=$(param snowflake_user)
+SNOWFLAKE_PRIVATE_KEY_PATH=/usr/local/airflow/keys/dbt_pipeline_key.p8
+SF_SKIP_TOKEN_FILE_PERMISSIONS_VERIFICATION=true
+NHTSA_BUCKET=${bucket}
+ALERTS_TOPIC_ARN=${alerts_topic_arn}
+AWS_DEFAULT_REGION=${region}
+PYTHONPATH=/usr/local/airflow/ingestion
+ENV
+chmod 600 "$REPO/airflow/.env"
+
+cd "$REPO/airflow"
+astro dev stop || true
+astro dev start --no-browser --wait 20m
+# New metadata databases start with DAGs paused.
+astro dev run dags unpause nhtsa_daily
+astro dev run dags unpause silver_full_refresh
+SCRIPT
+chmod 755 /usr/local/bin/vsp-airflow-start
+
+cat > /etc/systemd/system/vsp-airflow.service <<'UNIT'
+[Unit]
+Description=Airflow (Astro) for vehicle-safety-pipeline
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=ec2-user
+SupplementaryGroups=docker
+Environment=HOME=/home/ec2-user
+ExecStart=/usr/local/bin/vsp-airflow-start
+ExecStop=/bin/bash -c 'cd /home/ec2-user/vehicle-safety-pipeline/airflow && astro dev stop'
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+systemctl daemon-reload
+systemctl enable --now vsp-airflow.service
