@@ -35,3 +35,4 @@ airflow/.astro/config.yaml.lock
 .DS_Store
 .playwright-mcp/
 .streamlit/
+docs/diagram/architecture.html

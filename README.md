@@ -10,24 +10,7 @@ It was built over six weeks and runs on its own: Airflow on an EC2 Spot instance
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    nhtsa["NHTSA bulk files<br/>(complaints, recalls)"] -->|"ETag check, download,<br/>zip to gzip"| s3["S3 bronze<br/>partitioned by load date"]
-    s3 -->|COPY INTO| bronze["Snowflake BRONZE<br/>latest snapshot"]
-    bronze -->|dbt| silver["SILVER<br/>typed, deduplicated,<br/>standardized names"]
-    silver -->|dbt| gold["GOLD<br/>analytics marts and RAG documents"]
-    gold -->|"dbt + Cortex embeddings"| ai["AI.DOC_EMBEDDINGS<br/>VECTOR(1024)"]
-    ai --> chat["Chat page<br/>Claude Haiku 5.5, cited answers"]
-    gold -->|"read-only ASK_ROLE"| ask["Ask page<br/>Claude Sonnet 5.5 writes SQL"]
-    chat --> app(["Streamlit Community Cloud"])
-    ask --> app
-
-    airflow{{"Airflow 3 + Cosmos<br/>EC2 t4g.medium Spot, daily 12:00 UTC"}} -.->|orchestrates| s3
-    airflow -.-> bronze
-    airflow -.-> silver
-    airflow -.->|"failures, Spot stops"| sns["SNS email alerts"]
-    ci{{"GitHub Actions<br/>lint, tests, DAG tests,<br/>dbt build on PRs"}} -.->|"reads BRONZE,<br/>builds CI_* schemas"| bronze
-```
+![Architecture: NHTSA files land in S3, load into Snowflake bronze, dbt builds silver and gold, and a RAG chat and a text-to-SQL assistant serve them through Streamlit; Airflow on an EC2 Spot instance runs it daily](docs/images/architecture.png)
 
 Terraform manages the AWS side: the S3 bucket, IAM roles, the Spot instance with no inbound ports, the budget, and the alarms. Snowflake objects come from the numbered SQL scripts in `snowflake/`.
 
