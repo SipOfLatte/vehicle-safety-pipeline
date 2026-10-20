@@ -10,7 +10,7 @@ It was built over six weeks and runs on its own: Airflow on an EC2 Spot instance
 
 ## Architecture
 
-![Architecture: NHTSA files land in S3, load into Snowflake bronze, dbt builds silver and gold, and a RAG chat and a text-to-SQL assistant serve them through Streamlit; Airflow on an EC2 Spot instance runs it daily](docs/images/architecture.png)
+![Architecture: NHTSA files land in S3, load into Snowflake bronze, dbt builds silver and gold, and a RAG chat and a text-to-SQL assistant serve them through Streamlit; Airflow on an EC2 Spot instance runs it daily](docs/images/architecture-dark.png)
 
 Terraform manages the AWS side: the S3 bucket, IAM roles, the Spot instance with no inbound ports, the budget, and the alarms. Snowflake objects come from the numbered SQL scripts in `snowflake/`.
 

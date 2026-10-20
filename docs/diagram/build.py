@@ -3,7 +3,7 @@
 {{si:name:#color:size}} is a simple-icons logo (CC0), {{lu:name:#color:size}} a lucide outline icon (ISC).
 To render, serve this folder (python -m http.server), open architecture.html at a 3360px-wide viewport
 (the page uses zoom: 2) with the browser's color scheme set to dark (the README uses the dark
-version) and screenshot the .page element to docs/images/architecture.png.
+version) and screenshot the .page element to docs/images/architecture-dark.png.
 """
 import re
 from pathlib import Path
