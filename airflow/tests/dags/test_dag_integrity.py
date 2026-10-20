@@ -37,3 +37,13 @@ def test_tests_on_two_models_wait_for_both(dagbag):
     dag = dagbag.get_dag("nhtsa_daily")
     task = next(t for t in dag.tasks if "relationships_recall_components_vehicle_name_key" in t.task_id)
     assert {"dbt_build.recall_components.test", "dbt_build.vehicle_name_map.test"} <= task.upstream_task_ids
+
+
+def test_gold_waits_for_tests_on_two_models(dagbag):
+    """As in `dbt build`, a failing relationships test stops the models downstream of it. (A cycle would
+    show up as an import error in test_no_import_errors.)"""
+    dag = dagbag.get_dag("nhtsa_daily")
+    test = next(t for t in dag.tasks if "relationships_recall_components_vehicle_name_key" in t.task_id)
+    downstream = {t.task_id for t in test.get_flat_relatives(upstream=False)}
+    assert "dbt_build.vehicle_complaint_summary.run" in downstream
+
