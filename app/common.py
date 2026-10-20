@@ -41,12 +41,34 @@ def claude():
     return anthropic.Anthropic(max_retries=2, timeout=60.0)
 
 
-@st.cache_data(ttl=3600)
-def data_as_of() -> str:
+# The pipeline runs daily at 12:00 UTC; more than this since the last load means a run was missed.
+STALE_AFTER_HOURS = 36
+
+
+@st.cache_data(ttl=600)
+def last_load() -> tuple[str, float]:
+    """When the latest NHTSA load finished (UTC, as text) and how many hours ago that was."""
     cur = snowflake().cursor()
-    # Snowflake's session time zone defaults to US Pacific; show the load date in UTC.
-    cur.execute("select convert_timezone('UTC', max(loaded_at))::date from VEHICLE_SAFETY.BRONZE.LOAD_LOG")
-    return str(cur.fetchone()[0])
+    # Snowflake's session time zone defaults to US Pacific; report in UTC.
+    cur.execute(
+        "select to_char(convert_timezone('UTC', max(loaded_at)), 'YYYY-MM-DD HH24:MI'), "
+        "datediff('minute', max(loaded_at), current_timestamp()) / 60 from VEHICLE_SAFETY.BRONZE.LOAD_LOG"
+    )
+    loaded, hours = cur.fetchone()
+    return loaded, float(hours)
+
+
+def data_as_of() -> str:
+    return last_load()[0][:10]
+
+
+def show_freshness() -> None:
+    """Sidebar line saying how fresh the data is, with a warning if the daily update is late."""
+    loaded, hours = last_load()
+    age = f"{hours:.0f} hours ago" if hours >= 1 else "less than an hour ago"
+    st.sidebar.caption(f"NHTSA data loaded {loaded} UTC ({age}). The pipeline updates it daily at 12:00 UTC.")
+    if hours > STALE_AFTER_HOURS:
+        st.sidebar.warning("The daily update is late, so the newest complaints and recalls may be missing.")
 
 
 def spent_today_usd(page: str) -> float:

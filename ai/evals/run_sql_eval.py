@@ -62,7 +62,7 @@ def _sort_key(value):
 
 def _column_matches(expected: list, actual: list) -> bool:
     return len(expected) == len(actual) and all(
-        _close(e, a) for e, a in zip(sorted(expected, key=_sort_key), sorted(actual, key=_sort_key))
+        _close(e, a) for e, a in zip(sorted(expected, key=_sort_key), sorted(actual, key=_sort_key), strict=True)
     )
 
 
@@ -87,7 +87,7 @@ def results_match(expected_cols, expected_rows, actual_cols, actual_rows, ordere
     if not ordered:
         projected = sorted(projected, key=lambda r: tuple(map(_sort_key, r)))
         expected = sorted(expected, key=lambda r: tuple(map(_sort_key, r)))
-    return all(all(_close(e, a) for e, a in zip(er, ar)) for er, ar in zip(expected, projected))
+    return all(all(_close(e, a) for e, a in zip(er, ar, strict=True)) for er, ar in zip(expected, projected, strict=True))
 
 
 # --- runner ------------------------------------------------------------------------------------
@@ -108,7 +108,8 @@ def main() -> None:
 
     import anthropic
 
-    load_app_secrets(args.secrets)
+    if args.secrets.exists():  # local runs; in CI the SNOWFLAKE_* variables come from Actions secrets
+        load_app_secrets(args.secrets)
     client = anthropic.Anthropic(max_retries=3)
     questions = yaml.safe_load((HERE / "sql_questions.yaml").read_text())["questions"]
     if args.ids:
@@ -122,7 +123,7 @@ def main() -> None:
         for q in questions:
             usage = []
             started = time.monotonic()
-            out = ask(client, conn, q["question"], schema, on_usage=lambda p, m, u: usage.append(cost_usd(m, u)))
+            out = ask(client, conn, q["question"], schema, on_usage=lambda p, m, u, usage=usage: usage.append(cost_usd(m, u)))
             seconds = round(time.monotonic() - started, 1)
             row = {
                 "id": q["id"], "set": q["set"], "question": q["question"], "reviewed": q.get("reviewed", False),

@@ -14,9 +14,9 @@ variable "alert_email" {
 }
 
 variable "aws_monthly_budget_usd" {
-  description = "AWS share of the USD 40/month project cap (EC2 Spot + S3). Snowflake and Claude are capped separately."
+  description = "AWS share of the USD 40/month project cap: EC2 Spot about USD 18 (instance, disk, public IPv4) plus S3. Snowflake and Claude are capped separately."
   type        = number
-  default     = 15
+  default     = 25
 }
 
 variable "bronze_retention_days" {

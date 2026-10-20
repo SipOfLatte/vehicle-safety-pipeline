@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install ruff==0.17.1 pytest -r ingestion/requirements.txt -r ai/requirements.txt
+      - name: Lint
+        run: ruff check .
+      - name: Ingestion tests
+        run: cd ingestion && python -m pytest -q
+      - name: AI tests (no network; the model and Snowflake are faked)
+        run: python -m pytest -q ai  # python -m puts the repo root on sys.path for `import ai`
+
+  dag-tests:
+    # Builds the same Astro image as production and parses the DAGs inside it. Cosmos runs `dbt ls`
+    # while parsing, which needs the profile's environment variables but never connects, and reads an
+    # Airflow Variable, so the container gets an empty SQLite metadata database first.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Airflow image
+        run: docker build -t vsp-airflow airflow
+      - name: Parse DAGs and run DAG tests
+        run: |
+          chmod -R a+rwX dbt  # the container's user writes dbt_packages/ and target/ into the mounted folder
+          docker run --rm \
+            -v "$PWD/dbt:/usr/local/airflow/dbt" \
+            -v "$PWD/ingestion:/usr/local/airflow/ingestion:ro" \
+            -e SNOWFLAKE_ACCOUNT=ci-placeholder -e SNOWFLAKE_USER=ci -e SNOWFLAKE_PRIVATE_KEY_PATH=/dev/null \
+            -e ALERTS_TOPIC_ARN=arn:aws:sns:ap-southeast-2:000000000000:placeholder -e NHTSA_BUCKET=placeholder \
+            -e PYTHONPATH=/usr/local/airflow/ingestion \
+            vsp-airflow bash -c "airflow db migrate > /dev/null && cd /usr/local/airflow/dbt && /usr/local/airflow/dbt_venv/bin/dbt deps --quiet && cd .. && python -m pytest -q -p no:cacheprovider tests/dags"
+
+  dbt-build:
+    # Pull requests only: builds every model and runs every test into CI_SILVER, CI_GOLD and CI_AI
+    # (snowflake/09_ci_user.sql). Embeddings are switched off, so CI never calls Cortex.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    env:
+      DBT_TARGET: ci
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_PRIVATE_KEY: ${{ secrets.CI_SNOWFLAKE_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dbt
+        run: pip install -r airflow/dbt-requirements.txt
+      - name: dbt build
+        working-directory: dbt
+        run: |
+          dbt deps --quiet
+          dbt build --vars '{enable_embeddings: false}'

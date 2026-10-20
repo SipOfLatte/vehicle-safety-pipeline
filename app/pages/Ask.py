@@ -3,7 +3,16 @@
 import pandas as pd
 import streamlit as st
 
-from common import ask_snowflake, check_limits, claude, data_as_of, load_secrets, record_usage, sql_schema
+from common import (
+    ask_snowflake,
+    check_limits,
+    claude,
+    data_as_of,
+    load_secrets,
+    record_usage,
+    show_freshness,
+    sql_schema,
+)
 
 load_secrets()
 
@@ -12,6 +21,7 @@ from ai.text_to_sql.executor import MAX_ROWS  # noqa: E402
 
 st.set_page_config(page_title="Ask the data", page_icon="📊", layout="wide")
 st.title("Ask the data")
+show_freshness()
 st.caption(
     f"Claude writes SQL against four summary tables of NHTSA complaints and recalls, runs it with a "
     f"read-only role, and answers from the result. Data as of {data_as_of()}. Complaint totals are counts, "

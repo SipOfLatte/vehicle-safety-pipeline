@@ -1,0 +1,43 @@
+name: AI evals
+
+# Started by hand from the Actions tab after a prompt or model change. Each run spends real money:
+# the RAG eval about USD 0.01 of Claude, the text-to-SQL eval about USD 0.40 (dev) or 0.25 (holdout).
+on:
+  workflow_dispatch:
+    inputs:
+      eval:
+        description: Which eval to run
+        type: choice
+        options: [rag, sql-dev, sql-holdout]
+        default: rag
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-24.04
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: APP_READER
+      SNOWFLAKE_PRIVATE_KEY: ${{ secrets.APP_SNOWFLAKE_PRIVATE_KEY }}
+      SNOWFLAKE_ROLE: APP_ROLE
+      SNOWFLAKE_WAREHOUSE: APP_WH
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r ai/requirements.txt
+      - name: RAG eval
+        if: inputs.eval == 'rag'
+        run: python -m ai.evals.run_rag_eval
+      - name: Text-to-SQL eval
+        if: startsWith(inputs.eval, 'sql')
+        run: python -m ai.evals.run_sql_eval --set ${{ inputs.eval == 'sql-dev' && 'dev' || 'holdout' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ inputs.eval }}
+          path: ai/evals/results/

@@ -30,3 +30,10 @@ def test_daily_dag_order(dagbag):
     assert dag.get_task("anything_changed").downstream_task_ids == {"load_bronze"}
     assert "health_check" in {t.task_id for t in dag.tasks}
     assert any(t.startswith("dbt_build.") for t in dag.get_task("load_bronze").downstream_task_ids)
+
+
+def test_tests_on_two_models_wait_for_both(dagbag):
+    """A relationships test must run after both models it reads, not right after the first one."""
+    dag = dagbag.get_dag("nhtsa_daily")
+    task = next(t for t in dag.tasks if "relationships_recall_components_vehicle_name_key" in t.task_id)
+    assert {"dbt_build.recall_components.test", "dbt_build.vehicle_name_map.test"} <= task.upstream_task_ids

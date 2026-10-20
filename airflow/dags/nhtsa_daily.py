@@ -5,7 +5,7 @@ If no file changed since the last run, everything after ingestion is skipped.
 """
 
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from airflow.sdk import dag, task
 from cosmos import DbtTaskGroup
@@ -15,7 +15,7 @@ from common import DBT_EXECUTION, DBT_PROFILE, DBT_PROJECT, dbt_render, notify_f
 
 @dag(
     schedule="0 12 * * *",
-    start_date=datetime(2026, 10, 20, tzinfo=timezone.utc),
+    start_date=datetime(2026, 10, 20, tzinfo=UTC),
     catchup=False,
     max_active_runs=1,
     default_args={
@@ -30,7 +30,7 @@ def nhtsa_daily():
     def ingest() -> list[dict]:
         import nhtsa_ingest
 
-        results = nhtsa_ingest.run(os.environ["NHTSA_BUCKET"], list(nhtsa_ingest.DATASETS), datetime.now(timezone.utc).date())
+        results = nhtsa_ingest.run(os.environ["NHTSA_BUCKET"], list(nhtsa_ingest.DATASETS), datetime.now(UTC).date())
         return [r.__dict__ for r in results]
 
     @task.short_circuit

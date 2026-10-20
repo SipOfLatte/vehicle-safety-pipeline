@@ -1,0 +1,13 @@
+# Lint settings for CI (`ruff check .`). Defaults plus import sorting and a few bug-catching rules.
+line-length = 120
+target-version = "py312"
+extend-exclude = ["dbt/dbt_packages", "dbt/target", "airflow/.astro"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+# Prompts are long single-line strings on purpose; wrapping them would change what the model reads.
+ignore = ["E501"]
+
+[lint.isort]
+known-first-party = ["ai", "common", "nhtsa_ingest", "bronze_load"]
+known-third-party = ["airflow", "cosmos", "streamlit", "snowflake"]
