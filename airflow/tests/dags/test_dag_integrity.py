@@ -27,9 +27,16 @@ def test_dag_schedule_and_alerts(dagbag, dag_id, schedule):
 
 def test_daily_dag_order(dagbag):
     dag = dagbag.get_dag("nhtsa_daily")
-    assert dag.get_task("anything_changed").downstream_task_ids == {"load_bronze"}
-    assert "health_check" in {t.task_id for t in dag.tasks}
-    assert any(t.startswith("dbt_build.") for t in dag.get_task("load_bronze").downstream_task_ids)
+    assert dag.get_task("ingest").downstream_task_ids == {"load_bronze"}
+    assert dag.get_task("load_bronze").downstream_task_ids == {"anything_loaded"}
+    assert dag.get_task("anything_loaded").downstream_task_ids == {"health_check"}
+    # The health check gates dbt: every dbt task waits for it, directly or through another dbt task.
+    first = dag.get_task("health_check").downstream_task_ids
+    assert first and all(t.startswith("dbt_build.") for t in first)
+    assert all(
+        "health_check" in {u.task_id for u in t.get_flat_relatives(upstream=True)}
+        for t in dag.tasks if t.task_id.startswith("dbt_build.")
+    )
 
 
 def test_tests_on_two_models_wait_for_both(dagbag):

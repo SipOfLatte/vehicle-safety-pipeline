@@ -2,11 +2,17 @@
 
 Same approach as snowflake/04_load_bronze.sql: bronze holds only the latest snapshot, and
 each table is emptied and reloaded in one transaction, so a failed COPY leaves the previous
-data in place. Every load is recorded in BRONZE.LOAD_LOG for the row-count health check.
+data in place. Every load is recorded in BRONZE.LOAD_LOG, in the same transaction, for the
+row-count health check.
+
+A table is reloaded only when its latest files differ from the ones LOAD_LOG says it was last
+loaded from. That skips a table whose datasets didn't change, ignores datasets bronze doesn't
+load (investigations), and retries a load that failed on an earlier day.
 """
 
 from __future__ import annotations
 
+import json
 import os
 
 TABLES = {
@@ -46,26 +52,45 @@ def copy_sql(table: str, n_cols: int, s3_keys: list[str]) -> str:
     )
 
 
+def last_loaded_keys(cur) -> dict[str, list[str]]:
+    """S3 keys of the files each table was last loaded from, according to LOAD_LOG."""
+    cur.execute(
+        "SELECT TABLE_NAME, S3_KEYS FROM LOAD_LOG "
+        "QUALIFY ROW_NUMBER() OVER (PARTITION BY TABLE_NAME ORDER BY LOADED_AT DESC) = 1"
+    )
+    return {table: json.loads(keys) for table, keys in cur.fetchall()}
+
+
+def tables_to_load(latest_keys: dict[str, str], last_loaded: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Tables whose latest files differ from the ones they were last loaded from, with those files."""
+    todo = {}
+    for table, (datasets, _) in TABLES.items():
+        keys = [latest_keys[d] for d in datasets]
+        if last_loaded.get(table) != keys:
+            todo[table] = keys
+    return todo
+
+
 def load(conn, latest_keys: dict[str, str]) -> dict[str, int]:
-    """Reload every bronze table from the latest file of each of its datasets. Returns rows loaded per table."""
+    """Reload the bronze tables whose latest files changed. Returns rows loaded per reloaded table."""
     cur = conn.cursor()
     cur.execute(
         "CREATE TABLE IF NOT EXISTS LOAD_LOG ("
         "TABLE_NAME VARCHAR, S3_KEYS ARRAY, ROWS_LOADED NUMBER, LOADED_AT TIMESTAMP_LTZ)"
     )
     loaded = {}
-    for table, (datasets, n_cols) in TABLES.items():
-        keys = [latest_keys[d] for d in datasets]
+    for table, keys in tables_to_load(latest_keys, last_loaded_keys(cur)).items():
+        _, n_cols = TABLES[table]
         cur.execute("BEGIN")
         cur.execute(f"DELETE FROM {table}")
         cur.execute(copy_sql(table, n_cols, keys))
         # COPY returns one row per file; column 3 (0-based) is rows_loaded.
         rows = sum(int(r[3]) for r in cur.fetchall())
-        cur.execute("COMMIT")
         cur.execute(
             "INSERT INTO LOAD_LOG SELECT %s, PARSE_JSON(%s), %s, CURRENT_TIMESTAMP()",
-            (table, "[" + ", ".join(f'"{k}"' for k in keys) + "]", rows),
+            (table, json.dumps(keys), rows),
         )
+        cur.execute("COMMIT")
         loaded[table] = rows
     return loaded
 

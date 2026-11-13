@@ -1,0 +1,41 @@
+name: dbt CI
+
+# Builds every model and runs every test into CI_SILVER, CI_GOLD and CI_AI (snowflake/09_ci_user.sql)
+# on pull requests that change dbt. It runs on PIPELINE_WH, which counts against the account's monthly
+# credit monitor, so pull requests that don't touch dbt skip it. Embeddings are switched off, so CI
+# never calls Cortex.
+on:
+  pull_request:
+    paths:
+      - "dbt/**"
+      - "airflow/dbt-requirements.txt"
+      - ".github/workflows/dbt-ci.yml"
+
+concurrency:
+  group: dbt-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dbt-build:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    env:
+      DBT_TARGET: ci
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_PRIVATE_KEY: ${{ secrets.CI_SNOWFLAKE_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dbt
+        run: pip install -r airflow/dbt-requirements.txt
+      - name: dbt build
+        working-directory: dbt
+        run: |
+          dbt deps --quiet
+          dbt build --vars '{enable_embeddings: false}'
