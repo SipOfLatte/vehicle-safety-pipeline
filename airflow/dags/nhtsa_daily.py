@@ -1,7 +1,9 @@
-"""Daily NHTSA pipeline: new files to S3, load bronze, dbt build (silver and gold), health check.
+"""Daily NHTSA pipeline: new files to S3, load bronze, health check, dbt build (silver and gold).
 
 NHTSA regenerates its files around 07:00 to 10:30 UTC, so the run starts at 12:00 UTC.
-If no file changed since the last run, everything after ingestion is skipped.
+Bronze reloads only the tables whose files changed since their last successful load. If none
+did, the health check and dbt are skipped. The health check runs before dbt, so a truncated
+file stops the run before it reaches silver, gold or the embeddings.
 """
 
 import os
@@ -33,12 +35,6 @@ def nhtsa_daily():
         results = nhtsa_ingest.run(os.environ["NHTSA_BUCKET"], list(nhtsa_ingest.DATASETS), datetime.now(UTC).date())
         return [r.__dict__ for r in results]
 
-    @task.short_circuit
-    def anything_changed(results: list[dict]) -> bool:
-        changed = [r["dataset"] for r in results if r["changed"]]
-        print(f"Changed datasets: {changed or 'none'}")
-        return bool(changed)
-
     @task
     def load_bronze(results: list[dict]) -> dict:
         import bronze_load
@@ -47,6 +43,11 @@ def nhtsa_daily():
         with bronze_load.connect() as conn:
             return bronze_load.load(conn, latest_keys)
 
+    @task.short_circuit
+    def anything_loaded(loaded: dict) -> bool:
+        print(f"Reloaded tables: {loaded or 'none, bronze already has the latest files'}")
+        return bool(loaded)
+
     @task
     def health_check() -> dict:
         import bronze_load
@@ -54,9 +55,7 @@ def nhtsa_daily():
         with bronze_load.connect() as conn:
             return bronze_load.check_row_counts(conn)
 
-    results = ingest()
-    loaded = load_bronze(results)
-    anything_changed(results) >> loaded
+    loaded = load_bronze(ingest())
 
     dbt_build = DbtTaskGroup(
         group_id="dbt_build",
@@ -67,7 +66,7 @@ def nhtsa_daily():
     )
     block_on_detached_tests(dbt_build.iter_tasks())
 
-    loaded >> dbt_build >> health_check()
+    anything_loaded(loaded) >> health_check() >> dbt_build
 
 
 nhtsa_daily()

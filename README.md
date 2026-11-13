@@ -35,7 +35,7 @@ The Chat page answers questions about specific vehicles from complaint and recal
 | Embeddings and retrieval | Snowflake Cortex embeddings (`snowflake-arctic-embed-l-v2.0`), hand-written cosine similarity search with metadata filters | Built |
 | LLM | Claude API: Claude Haiku 5.5 for the chatbot, Claude Sonnet 5.5 for text-to-SQL | Built |
 | App | Streamlit Community Cloud: Chat and Ask pages, data freshness in the sidebar | Live |
-| CI | GitHub Actions: ruff, unit tests, DAG tests inside the Airflow image, `dbt build` into CI schemas on pull requests; AI evals on a manual button | Running |
+| CI | GitHub Actions: ruff, unit tests, DAG tests inside the Airflow image, `dbt build` into CI schemas on pull requests that change dbt; AI evals on a manual button | Running |
 
 ## The data
 
